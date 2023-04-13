@@ -7,17 +7,18 @@
 
 
 
-struct Element {
+struct Element // Struktura bazowa
+{
     char imie[20];
     char nazwisko[50];
     int nr_tel;
-    struct Element* previous;
-    struct Element* next;
+    struct Element* previous; // wskaznik na poprzedni element w liscie
+    struct Element* next; // wskaznik na nastepny element
 };
-struct Element* create_list()
+struct Element* create_list() //tworzenie nowego węzła
 {
-    struct Element* new_node = (struct Element*)malloc(sizeof(struct Element));
-    if (NULL == new_node)
+    struct Element* new_node = (struct Element*)malloc(sizeof(struct Element)); // dynamiczna alokacja pamięci dla nowego węzła
+    if (NULL == new_node) // sprawdzanie czy alokacja sie powiodła
     {
         printf("blad przydzialu pamieci");
         return 0;
@@ -25,43 +26,33 @@ struct Element* create_list()
 
     new_node->next = NULL;
     new_node->previous = NULL;
-    return new_node;
+    return new_node; // zwracanie wskaznika, ktory bedzie poczatkiem listy
 
 }
 struct Element* insert_before(struct Element** head, char imie[], char nazwisko[], int nr_tel)//dodaje element po lewej stronie od ,,glowy"
 {
-    struct Element* new_node = (struct Element*)malloc(sizeof(struct Element));
+    struct Element* new_node = (struct Element*)malloc(sizeof(struct Element)); // dynamiczna alokacja pamięci
     if (NULL == new_node)
     {
         printf("blad przydzialu pamieci");
         return 0;
     }
-    strcpy_s(new_node->imie, sizeof(new_node->imie), imie);
-    strcpy_s(new_node->nazwisko, sizeof(new_node->nazwisko), nazwisko);
-    new_node->nr_tel = nr_tel;
+    strcpy_s(new_node->imie, sizeof(new_node->imie), imie); // kopiowanie imienia z parametru funkcji do pola bazowego funkcji
+    strcpy_s(new_node->nazwisko, sizeof(new_node->nazwisko), nazwisko); // kopiowanie nazwiska z parametru funkcji do pola bazowego funkcji
+    new_node->nr_tel = nr_tel; // kopiowanie nr telefonu z parametru funkcji do pola bazowego funkcji
 
     
-    new_node->next = *head;
-    new_node->previous = NULL;
-    (*head)->previous = new_node;
-    *head = new_node;
-    
-    /*
-    new_node->next = (*head)->next;
-    new_node->previous = *head;
-    if ((*head)->next != NULL)
-    {
-        (*head)->next->previous = new_node;
-    }
-    (*head)->next = new_node;
-    *head = new_node;
-    */
-
-    return new_node;
-
+    new_node->next = *head; // ustawienie wskaźnika następnego elementu na węzeł głowy listy
+    new_node->previous = NULL; // ustawienie wskaźnika poprzedniego elementu na NULL
+    (*head)->previous = new_node; // ustawienie wskaźnika poprzedniego elementu w głowie listy na nowy węzeł
+    *head = new_node; // ustawienie wskaźnika na początek listy na nowy węzeł
+  
+    return new_node; // zwrócenie wskaźnika na nowy węzeł
 
 }
 
+/*
+Funkcja do poprawienia 
 struct Element* insert_after(struct Element** head, char imie[], char nazwisko[], int nr_tel)//dodaje element po prawej stronie od ,,glowy" do poprawki
 {
 
@@ -74,14 +65,6 @@ struct Element* insert_after(struct Element** head, char imie[], char nazwisko[]
     strcpy_s(new_node->imie, sizeof(new_node->imie), imie);
     strcpy_s(new_node->nazwisko, sizeof(new_node->nazwisko), nazwisko);
     new_node->nr_tel = nr_tel;
-
-
-    /*
-    new_node->next = NULL;
-    new_node->previous = *head;
-    (*head)->next = new_node;
-    *head = new_node;
-    */
 
 
     new_node->next = (*head)->next;
@@ -103,16 +86,16 @@ struct Element* insert_after(struct Element** head, char imie[], char nazwisko[]
 
     return new_node;
 }
+*/
+
 void print_list(struct Element** head)//wyswietla cala liste
 {
-    //struct Element* current = (*head)->next;
-    while (NULL != (*head)->next)
+    while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
-        printf("Imie: %s\n", (*head)->imie);
-        printf("Nazwisko: %s\n", (*head)->nazwisko);
-        printf("Numer telefonu: %d\n\n", (*head)->nr_tel);
-        *head = (*head)->next;
-        //current = current->next;
+        printf("Imie: %s\n", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
+        printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
+        printf("Numer telefonu: %d\n\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
+        *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
     }
 
 }
@@ -123,54 +106,53 @@ void print_values(struct Element** head)//wyswietla dane elementu w liscie
 
 void set_head_front(struct Element** head)//przesuwa ,,glowe" czyli glowny wskaznik na poczatek listy
 {
-    while ((*head)->previous != NULL)
+    while ((*head)->previous != NULL) // sprawdza czy aktualna głowa nie jest początkiem listy
     {
-        *head = (*head)->previous;
+        *head = (*head)->previous; // przesuwa wskaźnik na poprzedni element listy
     }
 }
 
 struct Element* search_by_imie(struct Element** head, char imie_s[20])//wyszukuje po imieniu
 {
+    printf("\nSzukane imie: %s \n", imie_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
     int found = 0;
     while ((*head)->next != NULL)
     {
-        //printf("%s\n", (*head)->imie);
         if (strcmp(imie_s, (*head)->imie) == 0)
-        {	//je¿eli beda miely takie same wartosci kilka razy to trzeba wyswietlac do ostatniego
-            found++;
+        {	//jezeli beda miely takie same wartosci kilka razy to trzeba wyswietlac do ostatniego
+            found++; // zmienna zliczajaca wystapienia
             print_values(head);
 
         }
 
         if (strcmp(imie_s, (*head)->imie) != 0);
         {
-            *head = (*head)->next;
+            *head = (*head)->next; //przesuwa wskaznik na nastepny element jesli szukane imie nie pasuje
         }
 
     }
 
     if (!found)
     {
-        printf("Nie znaleziono osoby o imieniu %s \n", imie_s);
+        printf("\nNie znaleziono osoby o imieniu %s \n\n", imie_s);
     }
     else
     {
-        printf("\nZnaleziono pasujace osoby w liczbie: %d", found);
+        printf("\nZnaleziono pasujace osoby w liczbie: %d\n\n", found);
     }
 
     return 0;//zwraca 0 jezeli nic nie znajdzie
 }
 
-struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])
+struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])//wyszukuje po nazwisku
 {
-    set_head_front(head);
-    // Mozna dodac zabezpieczenie przez utworzenie tymczasowej 'glowy' struct Element *temp = *head;
+    printf("\nSzukane nazwisko: %s \n", nazwisko_s);
+    set_head_front(head);//ustawia wskaznik na poczatek listy
     int found = 0;
 
     while (NULL != (*head)->next)
     {
-        //printf("%s\n", (*head)->nazwisko);
         if (strcmp(nazwisko_s, (*head)->nazwisko) == 0)
         {
             found++;
@@ -179,26 +161,26 @@ struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])
         }
         else
         {
-            *head = (*head)->next;
+            *head = (*head)->next;// przesuwa wskaznik na nastepny element jesli szukane nazwisko nie pasuje
         }
 
     }
     if (!found)
     {
-        printf("Nie znaleziono osoby o nazwisku %s \n", nazwisko_s);
+        printf("\nNie znaleziono osoby o nazwisku %s \n\n", nazwisko_s);
     }
     else
     {
-        printf("\nZnaleziono pasujace osoby w liczbie: %d", found);
+        printf("\nZnaleziono pasujace osoby w liczbie: %d\n\n", found);
     }
 
     return 0;
-
 };
 
-struct Element* search_by_nrtel(struct Element** head, int nrtel_s)
+struct Element* search_by_nrtel(struct Element** head, int nrtel_s)//wyszukuje po numerze telfonu
 {
-    set_head_front(head);
+    printf("\nSzukany nr telefonu: %d \n", nrtel_s);
+    set_head_front(head);//ustawia wskaznik na poczatek listy
 
     int found = 0;
     while (NULL != (*head)->next)
@@ -211,27 +193,27 @@ struct Element* search_by_nrtel(struct Element** head, int nrtel_s)
         }
         else
         {
-            *head = (*head)->next;
+            *head = (*head)->next;//przesuwa wskaznik na nastepny element jesli szukany nr telefonu nie pasuje do obecnego elementu
         }
 
     }
     if (!found)
     {
-        printf("Nie znaleziono osoby o numerze telefonu %d \n", nrtel_s);
+        printf("\nNie znaleziono osoby o numerze telefonu %d \n\n", nrtel_s);
     }
     else
     {
-        printf("\nZnaleziono pasujace osoby w liczbie: %d", found);
+        printf("\nZnaleziono pasujace osoby w liczbie: %d\n\n", found);
     }
 
     return 0;
 
 };
 
-struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], char nazwisko_s[50])
+struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], char nazwisko_s[50])//wyszukuje po imieniu i nazwisku
 {
-    set_head_front(head);
-    // Mozna dodac zabezpieczenie przez utworzenie tymczasowej 'glowy' struct Element *temp = *head;
+    printf("\nSzukana osoba: %s %s \n", imie_s, nazwisko_s);
+    set_head_front(head);//ustawia wskaznik na poczatek listy
     int found = 0;
 
     while (NULL != (*head)->next)
@@ -241,31 +223,31 @@ struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], 
             found++;
             print_values(head);
 
-            *head = (*head)->next;
+            *head = (*head)->next;//przesuwa wskaznik na nastepny element po wyswietleniu pasujacej osoby
         }
         else
         {
-            *head = (*head)->next;
+            *head = (*head)->next;//przesuwa wskaznik na nastepny element jesli szukany osoba nie pasuje do obecnego elementu
         }
 
     }
     if (!found)
     {
-        printf("Nie znaleziono osoby  %s %s \n", imie_s, nazwisko_s);
+        printf("\nNie znaleziono osoby %s %s \n\n", imie_s, nazwisko_s);
     }
     else
     {
-        printf("\nZnaleziono pasujace osoby w liczbie: %d", found);
+        printf("\nZnaleziono pasujace osoby w liczbie: %d\n\n", found);
     }
 
     return 0;
 
 };
 
-struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)
+struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//wyszukuje po imieniu, nazwisku i numerze telefonu
 {
-    set_head_front(head);
-    // Mozna dodac zabezpieczenie przez utworzenie tymczasowej 'glowy' struct Element *temp = *head;
+    printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
+    set_head_front(head);//ustawia wskaznik na poczatek listy
     int found = 0;
 
     while (NULL != (*head)->next)
@@ -275,21 +257,21 @@ struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s
             found++;
             print_values(head);
 
-            *head = (*head)->next;
+            *head = (*head)->next;//przesuwa wskaznik na nastepny element po wyswietleniu pasującej osoby
         }
         else
         {
-            *head = (*head)->next;
+            *head = (*head)->next; //przesuwa wskaznik na nastepny element jesli szukana osoba nie pasuje do obecnego elementu
         }
 
     }
     if (!found)
     {
-        printf("Nie znaleziono osoby  %s %s o numerze telefonu: %d\n", imie_s, nazwisko_s, nrtel_s);
+        printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\n\n", imie_s, nazwisko_s, nrtel_s);
     }
     else
     {
-        printf("\nZnaleziono pasujace osoby w liczbie: %d", found);
+        printf("\nZnaleziono pasujace osoby w liczbie: %d\n\n", found);
     }
 
     return 0;
@@ -312,29 +294,26 @@ int main()
     al_destroy_display(display); // usunięcie okna
     //TEST ALLEGRO KONIEC
     */
-    struct Element* head = create_list();
+    struct Element* head = create_list(); // utworzenie listy
+    
+    //Dodanie elementów do listy
+    insert_before(&head, "Kacper", "Kowalski", 111111111);
+    insert_before(&head, "Jan","Adamczyk", 222222222);
+    insert_before(&head, "Piotr", "Adamowicz", 333333333);
+    insert_before(&head, "Filip", "Krawczyk", 987654321);
+    insert_before(&head, "Tomasz", "Gracz", 123456789);
 
-    //print_values(&head);
-    insert_before(&head, "Kacper", "PierwszyDodanyPrzed", 222222222);
-    //insert_before(&head, "Jan","Adamczyk", 333333333);
-    //insert_before(&head, "Piotr", "Adamowicz", 111111111);
-    //print_values(&head);
-
-    insert_after(&head, "Dawid", "DrugiDodanyZa",333333333);
-    insert_after(&head, "Kamil", "TrzeciDodanyZa", 333333333);
-    insert_after(&head, "Kamil", "CzwartyDodanyZa", 333333333);
-    //insert_before(&head, "Piotr", "CzwartyDodanyPrzed", 222222222);
-    //print_values(&head);
+    //Ustawienie wskaznika na początek oraz wyświetlenie listy
     set_head_front(&head);
     print_list(&head);
     printf("\n\n\n");
 
-
-    //search_by_imie(&head, "Piotr");
-    //search_by_nazwisko(&head, "Adamczyk");
-    //search_by_nrtel(&head, 222222222);
-    //search_by_imie_naziwsko(&head, "Jan", "Adamczyk");
-    //search_by_imie_naziwsko_nrtel(&head, "Kamil", "CzwartyDodanyZa", 333333333);
+    //Wyszukiwanie osob w liscie
+    search_by_imie(&head, "Piotr");
+    search_by_nazwisko(&head, "Adamczyk");
+    search_by_nrtel(&head, 222222222);
+    search_by_imie_naziwsko(&head, "Jan", "Kowalski");
+    search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
     
     return 0;
 }
