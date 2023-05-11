@@ -1,9 +1,9 @@
 ﻿#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <allegro5/allegro5.h>
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_ttf.h>
+//#include <allegro5/allegro5.h>
+//#include <allegro5/allegro_font.h>
+//#include <allegro5/allegro_ttf.h>
 
 
 
@@ -277,7 +277,35 @@ struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s
     return 0;
 
 };
+void delete_element(struct Element** head)
+{
+    if (*head == NULL)
+    {
+        // Lista jest pusta
+        return;
+    }
+    struct Element* temp = *head;
+    if ((*head)->next == NULL)
+    {
+        (*head)->previous->next = NULL;
+        (*head) = (*head)->previous;
+        free(temp);
+    }
+    else if ((*head)->previous == NULL)
+    {
+        (*head)->next->previous = NULL;
+        (*head) = (*head)->next;
+        free(temp);
+    }
+    else
+    {
+        (*head)->previous->next = (*head)->next;
+        (*head)->next->previous = (*head)->previous;
+        (*head) = (*head)->next;
+        free(temp);
+    }
 
+}
 
 int main()
 {
@@ -304,16 +332,35 @@ int main()
     insert_before(&head, "Tomasz", "Gracz", 123456789);
 
     //Ustawienie wskaznika na początek oraz wyświetlenie listy
-    set_head_front(&head);
-    print_list(&head);
-    printf("\n\n\n");
+    //set_head_front(&head);
+   // print_list(&head);
+   // printf("\n\n\n");
 
     //Wyszukiwanie osob w liscie
-    search_by_imie(&head, "Piotr");
-    search_by_nazwisko(&head, "Adamczyk");
-    search_by_nrtel(&head, 222222222);
-    search_by_imie_naziwsko(&head, "Jan", "Kowalski");
-    search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
+   // search_by_imie(&head, "Piotr");
+   // search_by_nazwisko(&head, "Adamczyk");
+   // search_by_nrtel(&head, 222222222);
+   // print_values(head);
+    
+    
+    print_list(&head);
+    head = head->previous;
+    head = head->previous;
+    head = head->previous;
+    head = head->previous;
+    
+    printf("\naktualny element: %d\n\n", head->nr_tel);
+
+
+    printf("\n\nPo usunieciu: \n");
+    delete_element(&head);
+    set_head_front(&head);
+    print_list(&head);
+    
+    
+    print_list(&head);
+    //search_by_imie_naziwsko(&head, "Jan", "Kowalski");
+  //  search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
     
     return 0;
 }
