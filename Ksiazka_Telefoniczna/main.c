@@ -345,7 +345,64 @@ void delete_element(struct Element** head)
 
 }
 
+void swap(struct Element** a, struct Element** b)
+{
+    struct Element temp = **b;
+    printf("\n------------------- temporary zmienna %d\n", temp.nr_tel);
+    printf("\n------------------- a zmienna %d\n", (*a)->nr_tel);
+    (*b)->nr_tel = (*a)->nr_tel;
+    printf("\n------------------- temporary zmienna %d\n", temp.nr_tel);
+    (*a)->nr_tel = temp.nr_tel;
+    printf("\n\npo  zamianie a: %d  i b:%d\n ", (*a)->nr_tel, (*b)->nr_tel);
+    
+}
 
+void sortList(struct Element** head) 
+{
+    if (*head == NULL || (*head)->next == NULL)
+    {
+        // Lista jest pusta lub zawiera tylko jeden element
+        return;
+    }
+
+    int swapped;
+    struct Element* current;
+    struct Element* last = NULL;
+
+    do
+    {
+        swapped = 0;
+        current = *head;
+
+        while (current->next != last)
+        {
+            if (current->nr_tel < current->next->nr_tel)
+            {
+                swap(&current->next, &current);
+                swapped = 1;
+            }
+            current = current->next;
+        }
+        last = current;
+    } while (swapped);
+}/* {
+    int i = 0; 
+    struct Element temp = **head;
+    for (i=0;i < 5;i++)
+    {
+        set_head_front(head);
+        while ((*head)->next != NULL)
+        {
+            // printf("start petli");
+            if ((*head)->next->nr_tel > (*head)->nr_tel)
+            {
+                swap(&(*head)->next, &(*head));
+
+            }
+            (*head) = (*head)->next;
+        }
+    }
+}*/
 
 int main()
 {
@@ -365,8 +422,9 @@ int main()
     struct Element* head = create_list(); // utworzenie listy 
     
     //Dodanie elementów do listy
+    insert_before(&head, "Jan", "Adamczyk", 222222222);
     insert_before(&head, "Kacper", "Kowalski", 111111111);
-    insert_before(&head, "Jan","Adamczyk", 222222222);
+    
     insert_before(&head, "Piotr", "Adamowicz", 333333333);
     insert_before(&head, "Filip", "Krawczyk", 987654321);
     insert_before(&head, "Tomasz", "Gracz", 123456789);
@@ -384,15 +442,16 @@ int main()
     search_by_imie_naziwsko(&head, "Jan", "Kowalski");
     search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
     */
-
-    search_by_imie(&head, "Kacper");
-    printf("imie: %s", head->imie);
-    //search_by_imie_naziwsko_nrtel(&head, "Kacper", "Kowalski", 111111111);
-    printf("\nZamiana imienia na Piotrek i nr telefonu na 999999999\n");
+    //print_list(&head);
+   // sortList(&head);
     set_head_front(&head);
-    edit_contact(&head, "Kacper", "Kowalski", 111111111, "Piotrek", "Kowalski", 999999999);
+    
+    printf("wynik:");
     set_head_front(&head);
-    print_list(&head);
+   // printf("head====%s\n nastepny=%s\n", head->imie,head->next->imie);
+    sortList(&head);
+    set_head_front(&head);
+        print_list(&head);
     
     return 0;
 }
