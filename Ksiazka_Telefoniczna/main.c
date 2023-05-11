@@ -315,7 +315,35 @@ struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwis
     return 0;
 
 };
+void delete_element(struct Element** head)
+{
+    if (*head == NULL)
+    {
+        // Lista jest pusta
+        return;
+    }
+    struct Element* temp = *head;
+    if ((*head)->next == NULL)
+    {
+        (*head)->previous->next = NULL;
+        (*head) = (*head)->previous;
+        free(temp);
+    }
+    else if ((*head)->previous == NULL)
+    {
+        (*head)->next->previous = NULL;
+        (*head) = (*head)->next;
+        free(temp);
+    }
+    else
+    {
+        (*head)->previous->next = (*head)->next;
+        (*head)->next->previous = (*head)->previous;
+        (*head) = (*head)->next;
+        free(temp);
+    }
 
+}
 
 
 
