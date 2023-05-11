@@ -1,10 +1,9 @@
 ﻿#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-//#include <allegro5/allegro5.h>
-//#include <allegro5/allegro_font.h>
-//#include <allegro5/allegro_ttf.h>
-
+#include <allegro5/allegro5.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 
 struct Element // Struktura bazowa
@@ -32,7 +31,7 @@ struct Element* create_list() //tworzenie nowego węzła
 struct Element* insert_before(struct Element** head, char imie[], char nazwisko[], int nr_tel)//dodaje element po lewej stronie od ,,glowy"
 {
     struct Element* new_node = (struct Element*)malloc(sizeof(struct Element)); // dynamiczna alokacja pamięci
-    if (NULL == new_node)
+    if (NULL == new_node) // sprawdzanie czy alokacja sie powiodła
     {
         printf("blad przydzialu pamieci");
         return 0;
@@ -97,6 +96,7 @@ void print_list(struct Element** head)//wyswietla cala liste
         printf("Numer telefonu: %d\n\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
         *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
     }
+    
 
 }
 void print_values(struct Element** head)//wyswietla dane elementu w liscie
@@ -148,7 +148,7 @@ struct Element* search_by_imie(struct Element** head, char imie_s[20])//wyszukuj
 struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])//wyszukuje po nazwisku
 {
     printf("\nSzukane nazwisko: %s \n", nazwisko_s);
-    set_head_front(head);//ustawia wskaznik na poczatek listy
+    set_head_front(*head);//ustawia wskaznik na poczatek listy
     int found = 0;
 
     while (NULL != (*head)->next)
@@ -227,7 +227,7 @@ struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], 
         }
         else
         {
-            *head = (*head)->next;//przesuwa wskaznik na nastepny element jesli szukany osoba nie pasuje do obecnego elementu
+            *head = (*head)->next;//przesuwa wskaznik na nastepny element jesli szukana osoba nie pasuje do obecnego elementu
         }
 
     }
@@ -277,35 +277,47 @@ struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s
     return 0;
 
 };
-void delete_element(struct Element** head)
+
+struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s, char imie_ed[20], char nazwisko_ed[50], int nrtel_ed)//wyszukuje po imieniu, nazwisku i numerze telefonu
 {
-    if (*head == NULL)
+    printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
+    set_head_front(head);//ustawia wskaznik na poczatek listy
+    int found = 0;
+
+    while (NULL != (*head)->next)
     {
-        // Lista jest pusta
-        return;
+        if ((strcmp(imie_s, (*head)->imie) == 0) && (strcmp(nazwisko_s, (*head)->nazwisko) == 0) && nrtel_s == (*head)->nr_tel)
+        {
+            found++;
+
+            strcpy_s((*head)->imie, sizeof((*head)->imie), imie_ed); // edycja imienia z parametru funkcji do pola bazowego funkcji
+            strcpy_s((*head)->nazwisko, sizeof((*head)->nazwisko), nazwisko_ed); // kopiowanie nazwiska z parametru funkcji do pola bazowego funkcji
+            (*head)->nr_tel = nrtel_ed; // kopiowanie nr telefonu z parametru funkcji do pola bazowego funkcji
+
+            *head = (*head)->next;//przesuwa wskaznik na nastepny element po edytowaniu pasujacej osoby
+        }
+        else
+        {
+            *head = (*head)->next; //przesuwa wskaznik na nastepny element jesli szukana osoba nie pasuje do obecnego elementu
+        }
+
     }
-    struct Element* temp = *head;
-    if ((*head)->next == NULL)
+    if (!found)
     {
-        (*head)->previous->next = NULL;
-        (*head) = (*head)->previous;
-        free(temp);
-    }
-    else if ((*head)->previous == NULL)
-    {
-        (*head)->next->previous = NULL;
-        (*head) = (*head)->next;
-        free(temp);
+        printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\n\n", imie_s, nazwisko_s, nrtel_s);
     }
     else
     {
-        (*head)->previous->next = (*head)->next;
-        (*head)->next->previous = (*head)->previous;
-        (*head) = (*head)->next;
-        free(temp);
+        printf("\nZnaleziono osobe %s %s o numerze telefonu %d i zmieniono jej dane\n\n", imie_s, nazwisko_s, nrtel_s);
+
     }
 
-}
+    return 0;
+
+};
+
+
+
 
 int main()
 {
@@ -322,7 +334,7 @@ int main()
     al_destroy_display(display); // usunięcie okna
     //TEST ALLEGRO KONIEC
     */
-    struct Element* head = create_list(); // utworzenie listy
+    struct Element* head = create_list(); // utworzenie listy 
     
     //Dodanie elementów do listy
     insert_before(&head, "Kacper", "Kowalski", 111111111);
@@ -332,35 +344,27 @@ int main()
     insert_before(&head, "Tomasz", "Gracz", 123456789);
 
     //Ustawienie wskaznika na początek oraz wyświetlenie listy
-    //set_head_front(&head);
-   // print_list(&head);
-   // printf("\n\n\n");
-
-    //Wyszukiwanie osob w liscie
-   // search_by_imie(&head, "Piotr");
-   // search_by_nazwisko(&head, "Adamczyk");
-   // search_by_nrtel(&head, 222222222);
-   // print_values(head);
-    
-    
-    print_list(&head);
-    head = head->previous;
-    head = head->previous;
-    head = head->previous;
-    head = head->previous;
-    
-    printf("\naktualny element: %d\n\n", head->nr_tel);
-
-
-    printf("\n\nPo usunieciu: \n");
-    delete_element(&head);
     set_head_front(&head);
     print_list(&head);
-    
-    
+    printf("\n\n\n");
+
+    //Wyszukiwanie osob w liscie
+    /*
+    search_by_imie(&head, "Piotr");
+    search_by_nazwisko(&head, "Adamczyk");
+    search_by_nrtel(&head, 222222222);
+    search_by_imie_naziwsko(&head, "Jan", "Kowalski");
+    search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
+    */
+
+    search_by_imie(&head, "Kacper");
+    printf("imie: %s", head->imie);
+    //search_by_imie_naziwsko_nrtel(&head, "Kacper", "Kowalski", 111111111);
+    printf("\nZamiana imienia na Piotrek i nr telefonu na 999999999\n");
+    set_head_front(&head);
+    edit_contact(&head, "Kacper", "Kowalski", 111111111, "Piotrek", "Kowalski", 999999999);
+    set_head_front(&head);
     print_list(&head);
-    //search_by_imie_naziwsko(&head, "Jan", "Kowalski");
-  //  search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
     
     return 0;
 }
