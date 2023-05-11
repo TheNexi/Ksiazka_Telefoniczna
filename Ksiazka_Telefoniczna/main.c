@@ -4,11 +4,12 @@
 #include <allegro5/allegro5.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include "main.h"
 
 
 struct Element // Struktura bazowa
 {
-    char imie[20];
+    char imie[30];
     char nazwisko[50];
     int nr_tel;
     struct Element* previous; // wskaznik na poprzedni element w liscie
@@ -89,6 +90,8 @@ struct Element* insert_after(struct Element** head, char imie[], char nazwisko[]
 
 void print_list(struct Element** head)//wyswietla cala liste
 {
+    
+
     while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
         printf("Imie: %s\n", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
@@ -148,7 +151,7 @@ struct Element* search_by_imie(struct Element** head, char imie_s[20])//wyszukuj
 struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])//wyszukuje po nazwisku
 {
     printf("\nSzukane nazwisko: %s \n", nazwisko_s);
-    set_head_front(*head);//ustawia wskaznik na poczatek listy
+    set_head_front(head);//ustawia wskaznik na poczatek listy
     int found = 0;
 
     while (NULL != (*head)->next)
@@ -350,6 +353,10 @@ void delete_element(struct Element** head)
 int main()
 {
     
+    
+
+    
+   
     //TEST CZY DZIALA ALLEGRO 
     /*
     ALLEGRO_DISPLAY* display = NULL;
@@ -362,8 +369,8 @@ int main()
     al_destroy_display(display); // usunięcie okna
     //TEST ALLEGRO KONIEC
     */
-    struct Element* head = create_list(); // utworzenie listy 
     
+    /*
     //Dodanie elementów do listy
     insert_before(&head, "Kacper", "Kowalski", 111111111);
     insert_before(&head, "Jan","Adamczyk", 222222222);
@@ -384,7 +391,7 @@ int main()
     search_by_imie_naziwsko(&head, "Jan", "Kowalski");
     search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
     */
-
+    /*
     search_by_imie(&head, "Kacper");
     printf("imie: %s", head->imie);
     //search_by_imie_naziwsko_nrtel(&head, "Kacper", "Kowalski", 111111111);
@@ -393,6 +400,96 @@ int main()
     edit_contact(&head, "Kacper", "Kowalski", 111111111, "Piotrek", "Kowalski", 999999999);
     set_head_front(&head);
     print_list(&head);
+    */
+
+    struct Element* head = create_list(); // utworzenie listy 
+
+    //Interfejs konsolowy start
+    printf("Oto program ksiazki telefonicznej\n");
+    int wybor=0;
+    char imie[30];
+    char nazwisko[50];
+    char nr_tel_temp[30];
+    int nr_tel = 0;
+    int c;
+
+    while (wybor!=5)
+    {
+        printf("\nWybierz opcje dzialania:\n");
+        printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Zakoncz program\nWybrana opcja: ");
+        scanf_s("%d", &wybor);
+        switch(wybor)         
+        { 
+            case 1:
+            {
+                set_head_front(&head);
+                print_list(&head);
+                break;
+            }
+            case 2:
+            {
+                    
+                while (getchar() != "\n")
+                {
+                    printf("Podaj imie: ");
+                    fgets(imie, sizeof(imie), stdin);
+                    break;
+                }
+
+
+                printf("Podaj nazwisko: ");
+                fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+                printf("Podaj nr tel: ");
+                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+                nr_tel = atoi(nr_tel_temp);
+
+                insert_before(&head, imie, nazwisko, nr_tel);
+                break;
+
+            }
+            case 3:
+            {
+                break;
+
+
+            }
+            case 4:
+            {
+                break;
+
+
+            }
+            case 5:
+            {
+                break;
+
+
+            }
+            default:
+            {
+                printf("ERROR! Wybierz opcje od 1 do 5");
+                break;
+            }
+        }
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    //Interfejs konsolowy koniec
     
     return 0;
 }
