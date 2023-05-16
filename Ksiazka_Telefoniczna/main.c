@@ -90,16 +90,18 @@ struct Element* insert_after(struct Element** head, char imie[], char nazwisko[]
 
 void print_list(struct Element** head)//wyswietla cala liste
 {
-    
-
+    printf("\n\n");
+    int licznik = 1;
     while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
-        printf("Imie: %s\n", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
-        printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
-        printf("Numer telefonu: %d\n\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
+        printf("Osoba nr %d\n", licznik);
+        printf("Imie: %s", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
+        printf("Nazwisko: %s", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
+        printf("Numer telefonu: %d\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
         *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
+        licznik++;
     }
-    
+    printf("\n");
 
 }
 void print_values(struct Element** head)//wyswietla dane elementu w liscie
@@ -247,7 +249,7 @@ struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], 
 
 };
 
-struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//wyszukuje po imieniu, nazwisku i numerze telefonu
+bool search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//wyszukuje po imieniu, nazwisku i numerze telefonu
 {
     printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
@@ -258,7 +260,7 @@ struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s
         if ((strcmp(imie_s, (*head)->imie) == 0) && (strcmp(nazwisko_s, (*head)->nazwisko) == 0) && nrtel_s == (*head)->nr_tel)
         {
             found++;
-            print_values(head);
+            //print_values(head);
 
             *head = (*head)->next;//przesuwa wskaznik na nastepny element po wyswietleniu pasującej osoby
         }
@@ -271,13 +273,14 @@ struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s
     if (!found)
     {
         printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\n\n", imie_s, nazwisko_s, nrtel_s);
+        return false;
     }
     else
     {
         printf("\nZnaleziono pasujace osoby w liczbie: %d\n\n", found);
+        return true;
     }
 
-    return 0;
 
 };
 
@@ -407,22 +410,28 @@ int main()
     //Interfejs konsolowy start
     printf("Oto program ksiazki telefonicznej\n");
     int wybor=0;
+
     char imie[30];
     char nazwisko[50];
     char nr_tel_temp[30];
     int nr_tel = 0;
-    int c;
+    
+    char imie_edycja[30];
+    char nazwisko_edycja[50];
+    char nr_tel_temp_edycja[30];
+    int nr_tel_edycja = 0;
 
     while (wybor!=5)
     {
         printf("\nWybierz opcje dzialania:\n");
         printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Zakoncz program\nWybrana opcja: ");
         scanf_s("%d", &wybor);
+        //set_head_front(&head);
         switch(wybor)         
         { 
             case 1:
             {
-                set_head_front(&head);
+                //set_head_front(&head);
                 print_list(&head);
                 break;
             }
@@ -445,15 +454,67 @@ int main()
                 printf("Podaj nr tel: ");
                 fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
                 nr_tel = atoi(nr_tel_temp);
-
+                //set_head_front(&head);
                 insert_before(&head, imie, nazwisko, nr_tel);
+                
+                printf("Dodano osobe do listy!\n");
                 break;
 
             }
             case 3:
             {
-                break;
+                while (getchar() != "\n")
+                {
+                    printf("Podaj imie osoby do edycji: ");
+                    fgets(imie, sizeof(imie), stdin);
+                    break;
+                }
 
+
+                printf("Podaj nazwisko osoby do edycji: ");
+                fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+                printf("Podaj nr tel osoby do edycji: ");
+                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+                nr_tel = atoi(nr_tel_temp);
+
+                if (search_by_imie_naziwsko_nrtel(&head, imie, nazwisko, nr_tel))
+                {
+                    /*
+                    while (getchar() != "\n")
+                    {
+                        printf("Podaj imie osoby do edycji: ");
+                        fgets(imie, sizeof(imie), stdin);
+                        break;
+                    }
+                    */
+
+                    printf("Podaj imie na jakie chcesz zmienic: ");
+                    fgets(imie_edycja, sizeof(imie_edycja), stdin);
+
+                    printf("Podaj nazwisko na jakie chcesz zmienic: ");
+                    fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
+
+
+
+                    printf("Podaj nr tel na jakie chcesz zmienic: ");
+                    fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
+                    nr_tel_edycja = atoi(nr_tel_temp_edycja);
+                    edit_contact(&head, imie, nazwisko, nr_tel, imie_edycja, nazwisko_edycja, nr_tel_edycja);
+
+                }
+                else
+                {
+                    printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\nPrzerwano edycje!\n", imie, nazwisko, nr_tel);
+                }
+                
+                
+                
+                
+                
+                break;
 
             }
             case 4:
