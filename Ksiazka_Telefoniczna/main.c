@@ -89,14 +89,18 @@ struct Element* insert_after(struct Element** head, char imie[], char nazwisko[]
 
 void print_list(struct Element** head)//wyswietla cala liste
 {
+    
+
     while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
-        printf("Imie: %s\n", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
-        printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
-        printf("Numer telefonu: %d\n\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
+        printf("Osoba nr %d\n", licznik);
+        printf("Imie: %s", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
+        printf("Nazwisko: %s", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
+        printf("Numer telefonu: %d\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
         *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
+        licznik++;
     }
-    
+    printf("\n");
 
 }
 void print_values(struct Element** head)//wyswietla dane elementu w liscie
@@ -244,7 +248,7 @@ struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], 
 
 };
 
-struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//wyszukuje po imieniu, nazwisku i numerze telefonu
+bool search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//wyszukuje po imieniu, nazwisku i numerze telefonu
 {
     printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
@@ -255,7 +259,7 @@ struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s
         if ((strcmp(imie_s, (*head)->imie) == 0) && (strcmp(nazwisko_s, (*head)->nazwisko) == 0) && nrtel_s == (*head)->nr_tel)
         {
             found++;
-            print_values(head);
+            //print_values(head);
 
             *head = (*head)->next;//przesuwa wskaznik na nastepny element po wyswietleniu pasującej osoby
         }
@@ -268,13 +272,14 @@ struct Element* search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s
     if (!found)
     {
         printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\n\n", imie_s, nazwisko_s, nrtel_s);
+        return false;
     }
     else
     {
         printf("\nZnaleziono pasujace osoby w liczbie: %d\n\n", found);
+        return true;
     }
 
-    return 0;
 
 };
 
@@ -448,10 +453,99 @@ int main()
     //search_by_imie_naziwsko_nrtel(&head, "Kacper", "Kowalski", 111111111);
     printf("\nZamiana imienia na Piotrek i nr telefonu na 999999999\n");
     set_head_front(&head);
-   // printf("head====%s\n nastepny=%s\n", head->imie,head->next->imie);
-    sortList(&head);
+    edit_contact(&head, "Kacper", "Kowalski", 111111111, "Piotrek", "Kowalski", 999999999);
     set_head_front(&head);
     print_list(&head);
+    */
+
+    struct Element* head = create_list(); // utworzenie listy 
+
+    //Interfejs konsolowy start
+    printf("Oto program ksiazki telefonicznej\n");
+    int wybor=0;
+    char imie[30];
+    char nazwisko[50];
+    char nr_tel_temp[30];
+    int nr_tel = 0;
+    int c;
+
+    while (wybor!=5)
+    {
+        printf("\nWybierz opcje dzialania:\n");
+        printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Zakoncz program\nWybrana opcja: ");
+        scanf_s("%d", &wybor);
+        switch(wybor)         
+        { 
+            case 1:
+            {
+                set_head_front(&head);
+                print_list(&head);
+                break;
+            }
+            case 2:
+            {
+                    
+                while (getchar() != "\n")
+                {
+                    printf("Podaj imie: ");
+                    fgets(imie, sizeof(imie), stdin);
+                    break;
+                }
+
+
+                printf("Podaj nazwisko: ");
+                fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+                printf("Podaj nr tel: ");
+                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+                nr_tel = atoi(nr_tel_temp);
+
+                insert_before(&head, imie, nazwisko, nr_tel);
+                break;
+
+            }
+            case 3:
+            {
+                break;
+
+
+            }
+            case 4:
+            {
+                break;
+
+
+            }
+            case 5:
+            {
+                break;
+
+
+            }
+            default:
+            {
+                printf("ERROR! Wybierz opcje od 1 do 5");
+                break;
+            }
+        }
+
+
+
+
+
+
+    }
+
+
+
+
+
+
+
+
+    //Interfejs konsolowy koniec
     
     return 0;
 }
