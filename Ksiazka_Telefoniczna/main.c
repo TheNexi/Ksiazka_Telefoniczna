@@ -30,6 +30,7 @@ struct Element* create_list() //tworzenie nowego węzła
 }
 struct Element* insert_before(struct Element** head, char imie[], char nazwisko[], int nr_tel)//dodaje element po lewej stronie od ,,glowy"
 {
+    
     struct Element* new_node = (struct Element*)malloc(sizeof(struct Element)); // dynamiczna alokacja pamięci
     if (NULL == new_node) // sprawdzanie czy alokacja sie powiodła
     {
@@ -42,6 +43,7 @@ struct Element* insert_before(struct Element** head, char imie[], char nazwisko[
 
     
     new_node->next = *head; // ustawienie wskaźnika następnego elementu na węzeł głowy listy
+    
     new_node->previous = NULL; // ustawienie wskaźnika poprzedniego elementu na NULL
     (*head)->previous = new_node; // ustawienie wskaźnika poprzedniego elementu w głowie listy na nowy węzeł
     *head = new_node; // ustawienie wskaźnika na początek listy na nowy węzeł
@@ -93,12 +95,12 @@ void print_list(struct Element** head)//wyswietla cala liste
 
     while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
-        printf("Osoba nr %d\n", licznik);
+        
         printf("Imie: %s", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
         printf("Nazwisko: %s", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
         printf("Numer telefonu: %d\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
         *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
-        licznik++;
+        
     }
     printf("\n");
 
@@ -113,6 +115,14 @@ void set_head_front(struct Element** head)//przesuwa ,,glowe" czyli glowny wskaz
     while ((*head)->previous != NULL) // sprawdza czy aktualna głowa nie jest początkiem listy
     {
         *head = (*head)->previous; // przesuwa wskaźnik na poprzedni element listy
+    }
+}
+
+void set_head_back(struct Element** head)//przesuwa ,,glowe" czyli glowny wskaznik na poczatek listy
+{
+    while ((*head)->next != NULL) // sprawdza czy aktualna głowa nie jest początkiem listy
+    {
+        *head = (*head)->next; // przesuwa wskaźnik na poprzedni element listy
     }
 }
 
@@ -307,6 +317,8 @@ struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwis
         }
 
     }
+
+    //Wyswietlanie informacji o powodzeniu operacji
     if (!found)
     {
         printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\n\n", imie_s, nazwisko_s, nrtel_s);
@@ -359,10 +371,10 @@ void swap(struct Element** a, struct Element** b)
     printf("\n------------------- temporary zmienna %d\n", temp.nr_tel);
     (*a)->nr_tel = temp.nr_tel;
     printf("\n\npo  zamianie a: %d  i b:%d\n ", (*a)->nr_tel, (*b)->nr_tel);
-    
+
 }
 
-void sortList(struct Element** head) 
+void sortList(struct Element** head)
 {
     if (*head == NULL || (*head)->next == NULL)
     {
@@ -391,7 +403,7 @@ void sortList(struct Element** head)
         last = current;
     } while (swapped);
 }/* {
-    int i = 0; 
+    int i = 0;
     struct Element temp = **head;
     for (i=0;i < 5;i++)
     {
@@ -424,21 +436,23 @@ int main()
     al_destroy_display(display); // usunięcie okna
     //TEST ALLEGRO KONIEC
     */
-    struct Element* head = create_list(); // utworzenie listy 
+    //struct Element* head = create_list(); // utworzenie listy 
     
     //Dodanie elementów do listy
+    /*
     insert_before(&head, "Jan", "Adamczyk", 222222222);
     insert_before(&head, "Kacper", "Kowalski", 111111111);
     
     insert_before(&head, "Piotr", "Adamowicz", 333333333);
     insert_before(&head, "Filip", "Krawczyk", 987654321);
     insert_before(&head, "Tomasz", "Gracz", 123456789);
-
+    */
     //Ustawienie wskaznika na początek oraz wyświetlenie listy
+    /*
     set_head_front(&head);
     print_list(&head);
     printf("\n\n\n");
-
+    */
     //Wyszukiwanie osob w liscie
     /*
     search_by_imie(&head, "Piotr");
@@ -447,7 +461,7 @@ int main()
     search_by_imie_naziwsko(&head, "Jan", "Kowalski");
     search_by_imie_naziwsko_nrtel(&head, "Kamil", "Adamczyk", 123456789);
     */
-
+    /*
     search_by_imie(&head, "Kacper");
     printf("imie: %s", head->imie);
     //search_by_imie_naziwsko_nrtel(&head, "Kacper", "Kowalski", 111111111);
@@ -460,6 +474,16 @@ int main()
 
     struct Element* head = create_list(); // utworzenie listy 
 
+    //TEST
+    //Dodanie elementów do listy
+    
+    insert_before(&head, "Kacper", "Kowalski", 111111111);
+    insert_before(&head, "Jan", "Adamczyk", 222222222);
+    insert_before(&head, "Piotr", "Adamowicz", 333333333);
+    insert_before(&head, "Filip", "Krawczyk", 987654321);
+    insert_before(&head, "Tomasz", "Gracz", 123456789);
+    
+
     //Interfejs konsolowy start
     printf("Oto program ksiazki telefonicznej\n");
     int wybor=0;
@@ -467,24 +491,109 @@ int main()
     char nazwisko[50];
     char nr_tel_temp[30];
     int nr_tel = 0;
-    int c;
 
-    while (wybor!=5)
+    char imie_edycja[30];
+    char nazwisko_edycja[50];
+    int nr_tel_edycja=0;
+    int nr_tel_temp_edycja=0;
+
+
+    while (wybor!=6)
     {
         printf("\nWybierz opcje dzialania:\n");
-        printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Zakoncz program\nWybrana opcja: ");
+        printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Sortuj liste\n6. Zakoncz program\nWybrana opcja: ");
         scanf_s("%d", &wybor);
         switch(wybor)         
         { 
             case 1:
             {
+                //Wyswietlanie listy
                 set_head_front(&head);
                 print_list(&head);
                 break;
             }
             case 2:
             {
-                    
+                //Dodawanie osoby       
+                while (getchar() != "\n")
+                {
+                    printf("Podaj imie: ");
+                    fgets(imie, sizeof(imie), stdin);
+                    break;
+                }
+
+
+                printf("Podaj nazwisko: ");
+                fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+                printf("Podaj nr tel: ");
+                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+                nr_tel = atoi(nr_tel_temp);
+                set_head_front(&head);
+                //set_head_back(&head);
+                insert_before(&head, imie, nazwisko, nr_tel);
+                break;
+
+            }
+            case 3:
+            {
+                //Edytowanie osoby
+                while (getchar() != "\n")
+                {
+                    printf("Podaj imie osoby do edycji: ");
+                    fgets(imie, sizeof(imie), stdin);
+                    break;
+                }
+
+
+                printf("Podaj nazwisko osoby do edycji: ");
+                fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+                printf("Podaj nr tel osoby do edycji: ");
+                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+                nr_tel = atoi(nr_tel_temp);
+
+                if (search_by_imie_naziwsko_nrtel(&head, imie, nazwisko, nr_tel))
+                {
+                    /*
+                    while (getchar() != "\n")
+                    {
+                        printf("Podaj imie osoby do edycji: ");
+                        fgets(imie, sizeof(imie), stdin);
+                        break;
+                    }
+                    */
+
+                    printf("Podaj imie na jakie chcesz zmienic: ");
+                    fgets(imie_edycja, sizeof(imie_edycja), stdin);
+
+                    printf("Podaj nazwisko na jakie chcesz zmienic: ");
+                    fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
+
+
+
+                    printf("Podaj nr tel na jakie chcesz zmienic: ");
+                    fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
+                    nr_tel_edycja = atoi(nr_tel_temp_edycja);
+                    edit_contact(&head, imie, nazwisko, nr_tel, imie_edycja, nazwisko_edycja, nr_tel_edycja);
+
+                }
+                else
+                {
+                    printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\nPrzerwano edycje!\n", imie, nazwisko, nr_tel);
+                }
+                
+                break;
+
+            }
+            case 4:
+            {
+                //Usuwanie osoby z listy
+
                 while (getchar() != "\n")
                 {
                     printf("Podaj imie: ");
@@ -502,30 +611,30 @@ int main()
                 fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
                 nr_tel = atoi(nr_tel_temp);
 
-                insert_before(&head, imie, nazwisko, nr_tel);
-                break;
+                //head = search_and_set(&head, imie, nazwisko, nr_tel);
+                //delete_element(&head);
 
-            }
-            case 3:
-            {
-                break;
-
-
-            }
-            case 4:
-            {
                 break;
 
 
             }
             case 5:
             {
+                //Sortowanie
+                set_head_front(&head);
+                
+
+            }
+            case 6:
+            {
+                //Zakończ program
                 break;
 
 
             }
             default:
             {
+                //Obsluga blednego wyboru
                 printf("ERROR! Wybierz opcje od 1 do 5");
                 break;
             }
