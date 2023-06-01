@@ -433,6 +433,8 @@ void sortList(struct Element** head)
         }
         last = current;
     } while (swapped);
+ 
+    
 }/* {
     int i = 0;
     struct Element temp = **head;
@@ -451,6 +453,50 @@ void sortList(struct Element** head)
         }
     }
 }*/
+
+void sortListByString(struct Element** head,bool dir)
+{
+    //set_head_front(head);
+    int swapped;
+    struct Element* ptr1;
+    struct Element* lptr = NULL;
+
+    if (*head == NULL)
+        return;
+
+    do {
+        swapped = 0;
+        ptr1 = *head;
+
+        while (ptr1->next != lptr) {
+            if (compareStrings(ptr1->imie, ptr1->next->imie,dir) > 0) {
+                swap_string(ptr1, ptr1->next);
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while (swapped);
+}
+int swap_string(struct Element* a, struct Element* b) {
+    char temp[100];
+    int nr_tel=a->nr_tel;
+    a->nr_tel = b->nr_tel;
+    b->nr_tel = nr_tel;
+
+    strcpy_s(temp, sizeof(temp), a->imie);
+    strcpy_s(a->imie, sizeof(a->imie), b->imie);
+    strcpy_s(b->imie, sizeof(b->imie), temp);
+    strcpy_s(temp, sizeof(temp), a->nazwisko);
+    strcpy_s(a->nazwisko, sizeof(a->nazwisko), b->nazwisko);
+    strcpy_s(b->nazwisko, sizeof(b->nazwisko), temp);
+}
+int compareStrings(const char* a, const char* b,bool dir) {
+    if (dir==1)
+    return strcmp(a, b);
+    else 
+    return strcmp(b, a);
+}
 
 int main()
 {
@@ -473,13 +519,17 @@ int main()
     //TEST
     //Dodanie elementów do listy
     
-    insert_before(&head, "Kacper\n", "Kowalski\n", 111111111);
-    insert_before(&head, "Jan\n", "Adamczyk\n", 222222222);
-    insert_before(&head, "Piotr\n", "Adamowicz\n", 333333333);
+   /* insert_before(&head, "Kacper\n", "Kowals\n", 111111111);
+    insert_before(&head, "Jan\n", "Adamcz\n", 222222222);
+    insert_before(&head, "Piotr\n", "Adamow\n", 333333333);
     insert_before(&head, "Filip\n", "Krawczyk\n", 987654321);
-    insert_before(&head, "Tomasz\n", "Gracz\n", 123456789);
+    insert_before(&head, "Tomasz\n", "Gracz\n", 123456789);*/
     
-
+    print_list(&head);
+    
+    
+    printf("po sortowaniu:\n\n\n");
+    print_list(&head);
     //Interfejs konsolowy start
     printf("Oto program ksiazki telefonicznej\n");
     int wybor=0;
@@ -488,7 +538,7 @@ int main()
     char nazwisko[50];
     char nr_tel_temp[30];
     int nr_tel = 0;
-
+    
     char imie_edycja[30];
     char nazwisko_edycja[50];
     int nr_tel_edycja=0;
@@ -631,6 +681,7 @@ int main()
                 }
                 else if (wybor_sortowania == 2)
                 {
+                    sortListByString(&head,1);
                     break;
                 }
                 else if (wybor_sortowania == 3)
