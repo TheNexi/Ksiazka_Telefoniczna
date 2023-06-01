@@ -91,18 +91,14 @@ struct Element* insert_after(struct Element** head, char imie[], char nazwisko[]
 
 void print_list(struct Element** head)//wyswietla cala liste
 {
-    
 
     while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
-        
-        printf("Imie: %s", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
-        printf("Nazwisko: %s", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
+        printf("Imie: %s\n", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
+        printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
         printf("Numer telefonu: %d\n\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
         *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
-        
     }
-    
 
 }
 void print_values(struct Element** head)//wyswietla dane elementu w liscie
@@ -454,6 +450,51 @@ void sortList(struct Element** head)
     }
 }*/
 
+void export_phonebook_to_file(char* file_name, struct Element* head)
+{
+    FILE *file;
+    if (fopen_s(&file, file_name, "w") != 0) 
+    {
+        printf("Błąd podczas otwierania pliku.\n");
+        return;
+    }
+
+    set_head_front(&head);
+
+    while (NULL != head->next)
+    {
+        fprintf(file, "%s\n", head->imie);
+        fprintf(file, "%s\n", head->nazwisko);
+        fprintf(file, "%d\n", head->nr_tel);
+        head = head->next;
+    }
+
+    fclose(file);
+    printf("Dane zostaly zapisane do pliku.\n");
+
+}
+
+void import_phonebook_from_file(char* file_name, struct Element** head) {
+    FILE* file;
+    if (fopen_s(&file, file_name, "r") != 0) 
+    {
+        printf("Błąd podczas otwierania pliku.\n");
+        return;
+    }
+    set_head_front(&head);
+    char imie[20];
+    char nazwisko[50];
+    int nr_tel;
+
+    while (fscanf_s(file, "%19s\n%49s\n%d\n", imie, sizeof(imie), nazwisko, sizeof(nazwisko), &nr_tel) == 3)
+    {
+        insert_before(head, imie, nazwisko, nr_tel);
+    }
+
+    fclose(file);
+    printf("Dane zostaly wczytane z pliku.\n");
+}
+
 void sortListByString(struct Element** head,bool dir)
 {
     //set_head_front(head);
@@ -518,6 +559,13 @@ int main()
 
     //TEST
     //Dodanie elementów do listy
+    /*
+    insert_before(&head, "Kacper", "Kowalski", 111111111);
+    insert_before(&head, "Jan", "Adamczyk", 222222222);
+    insert_before(&head, "Piotr", "Adamowicz", 333333333);
+    insert_before(&head, "Filip", "Krawczyk", 987654321);
+    insert_before(&head, "Tomasz", "Gracz", 123456789);
+    */
     
    /* insert_before(&head, "Kacper\n", "Kowals\n", 111111111);
     insert_before(&head, "Jan\n", "Adamcz\n", 222222222);
@@ -545,10 +593,10 @@ int main()
     int nr_tel_temp_edycja=0;
 
 
-    while (wybor!=6)
+    while (wybor!=8)
     {
         printf("\nWybierz opcje dzialania:\n");
-        printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Sortuj liste\n6. Zakoncz program\nWybrana opcja: ");
+        printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Sortuj liste\n6. Import kontakow z pliku\n7. Eksport kontaktow do pliku\n8. Zakoncz program\nWybrana opcja: ");
         scanf_s("%d", &wybor);
         switch(wybor)         
         { 
@@ -581,6 +629,7 @@ int main()
                 set_head_front(&head);
                 //set_head_back(&head);
                 insert_before(&head, imie, nazwisko, nr_tel);
+                
                 break;
 
             }
@@ -611,7 +660,6 @@ int main()
 
                     printf("Podaj nazwisko na jakie chcesz zmienic: ");
                     fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
-
 
 
                     printf("Podaj nr tel na jakie chcesz zmienic: ");
@@ -699,6 +747,28 @@ int main()
 
             }
             case 6:
+            {
+                //Import z pliku
+                import_phonebook_from_file("ksiazka_telefonicza.txt", &head);
+                
+                
+                
+                
+                
+                break;
+            }
+            case 7:
+            {
+                //Eksport do pliku
+                export_phonebook_to_file("ksiazka_telefonicza.txt", head);
+
+
+
+
+
+                break;
+            }
+            case 8:
             {
                 //Zakończ program
                 break;
