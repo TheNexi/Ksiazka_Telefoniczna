@@ -48,6 +48,9 @@ struct Element* insert_before(struct Element** head, char imie[], char nazwisko[
     (*head)->previous = new_node; // ustawienie wskaźnika poprzedniego elementu w głowie listy na nowy węzeł
     *head = new_node; // ustawienie wskaźnika na początek listy na nowy węzeł
   
+
+
+
     return new_node; // zwrócenie wskaźnika na nowy węzeł
 
 }
@@ -388,18 +391,27 @@ bool search_and_set(struct Element** head, char imie_s[20], char nazwisko_s[50],
 
 
 
-
 void swap(struct Element** a, struct Element** b)
 {
     struct Element temp = **b;
-    //printf("\n------------------- temporary zmienna %d\n", temp.nr_tel);
+
+    temp.nr_tel = (*b)->nr_tel;
+    //printf("\n------------------- temporary zmienna %d\n", nr_tel);
     //printf("\n------------------- a zmienna %d\n", (*a)->nr_tel);
     (*b)->nr_tel = (*a)->nr_tel;
-    //printf("\n------------------- temporary zmienna %d\n", temp.nr_tel);
+    //printf("\n------------------- temporary zmienna %d\n", nr_tel);
     (*a)->nr_tel = temp.nr_tel;
     //printf("\n\npo  zamianie a: %d  i b:%d\n ", (*a)->nr_tel, (*b)->nr_tel);
 
+    strncpy_s(temp.imie, sizeof(temp.imie), (*b)->imie, sizeof(temp.imie) - 1);
+    strncpy_s((*b)->imie, sizeof((*b)->imie), (*a)->imie, sizeof((*b)->imie) - 1);
+    strncpy_s((*a)->imie, sizeof((*a)->imie), temp.imie, sizeof((*a)->imie) - 1);
+
+    strncpy_s(temp.nazwisko, sizeof(temp.nazwisko), (*b)->nazwisko, sizeof(temp.nazwisko) - 1);
+    strncpy_s((*b)->nazwisko, sizeof((*b)->nazwisko), (*a)->nazwisko, sizeof((*b)->nazwisko) - 1);
+    strncpy_s((*a)->nazwisko, sizeof((*a)->nazwisko), temp.nazwisko, sizeof((*a)->nazwisko) - 1);
 }
+
 
 void sortList(struct Element** head)
 {
@@ -429,9 +441,40 @@ void sortList(struct Element** head)
         }
         last = current;
     } while (swapped);
- 
-    
-}/* {
+}
+
+void sortListNrTelRos(struct Element** head)
+{
+    if (*head == NULL || (*head)->next == NULL)
+    {
+        // Lista jest pusta lub zawiera tylko jeden element
+        return;
+    }
+
+    int swapped;
+    struct Element* current;
+    struct Element* last = NULL;
+
+    do
+    {
+        swapped = 0;
+        current = *head;
+
+        while (current->next != last)
+        {
+            if (current->nr_tel > current->next->nr_tel)
+            {
+                swap(&current->next, &current);
+                swapped = 1;
+            }
+            current = current->next;
+        }
+        last = current;
+    } while (swapped);
+}
+
+
+/* {
     int i = 0;
     struct Element temp = **head;
     for (i=0;i < 5;i++)
@@ -481,7 +524,7 @@ void import_phonebook_from_file(char* file_name, struct Element** head) {
         printf("Błąd podczas otwierania pliku.\n");
         return;
     }
-    set_head_front(&head);
+    set_head_front(head);
     char imie[20];
     char nazwisko[50];
     int nr_tel;
@@ -521,17 +564,19 @@ void sortListByString(struct Element** head,bool dir)
     } while (swapped);
 }
 int swap_string(struct Element* a, struct Element* b) {
-    char temp[100];
+    char temp_imie[20];
+    char temp_nazwisko[50];
     int nr_tel=a->nr_tel;
     a->nr_tel = b->nr_tel;
     b->nr_tel = nr_tel;
 
-    strcpy_s(temp, sizeof(temp), a->imie);
-    strcpy_s(a->imie, sizeof(a->imie), b->imie);
-    strcpy_s(b->imie, sizeof(b->imie), temp);
-    strcpy_s(temp, sizeof(temp), a->nazwisko);
-    strcpy_s(a->nazwisko, sizeof(a->nazwisko), b->nazwisko);
-    strcpy_s(b->nazwisko, sizeof(b->nazwisko), temp);
+    strncpy_s(temp_imie, sizeof(temp_imie), a->imie, sizeof(temp_imie) - 1);
+    strncpy_s(a->imie, sizeof(a->imie), b->imie, sizeof(a->imie) - 1);
+    strncpy_s(b->imie, sizeof(b->imie), temp_imie, sizeof(b->imie) - 1);
+
+    strncpy_s(temp_nazwisko, sizeof(temp_nazwisko), a->nazwisko, sizeof(temp_nazwisko) - 1);
+    strncpy_s(a->nazwisko, sizeof(a->nazwisko), b->nazwisko, sizeof(a->nazwisko) - 1);
+    strncpy_s(b->nazwisko, sizeof(b->nazwisko), temp_nazwisko, sizeof(b->nazwisko) - 1);
 }
 int compareStrings(const char* a, const char* b,bool dir) {
     if (dir==1)
@@ -631,7 +676,7 @@ int main()
     insert_before(&head, "piotr", "adamowicz", 333333333);
     insert_before(&head, "filip", "krawczyk", 987654321);
     insert_before(&head, "tomasz", "gracz", 123456789);
-    */
+   
     
     insert_before(&head, "Kacper\n", "Kowals\n", 111111111);
     insert_before(&head, "Jan\n", "Adamcz\n", 222222222);
@@ -639,15 +684,19 @@ int main()
     insert_before(&head, "Filip\n", "Krawczyk\n", 987654321);
     insert_before(&head, "Tomasz\n", "Gracz\n", 123456789);
     
-    print_list(&head);
-    
-    
-    printf("po sortowaniu:\n\n\n");
-    print_list(&head);
+    */
+
+    //print_list(&head);
+    //printf("po sortowaniu:\n\n\n");
+    //print_list(&head);
+
+
+
     //Interfejs konsolowy start
     printf("Oto program ksiazki telefonicznej\n");
     int wybor=0;
     int wybor_sortowania = 0;
+    int wybor_ros_mal = 0;
     char imie[30];
     char nazwisko[50];
     char nr_tel_temp[30];
@@ -792,48 +841,106 @@ int main()
                 }
                 if (wybor_sortowania == 1)
                 {
-                    sortList(&head);
+                    printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
+                    scanf_s("%d", &wybor_ros_mal);
+
+                    if (wybor_ros_mal == 1)
+                    {
+                        //rosnaco nr tel
+                        sortListNrTelRos(&head);
+                        print_values(&head);
+                        printf("\nSortowanie po numerze telefonu rosnaco wykonane.\n");
+                        break;
+                    }
+                    else if (wybor_ros_mal == 2)
+                    {
+                        //malejaco
+                        sortList(&head);
+                        printf("\nSortowanie po numerze telefonu malejaco wykonane.\n");
+                        break;
+                    }
+                    else
+                    {
+                        printf("\nBledny wybor sortowania! Powrot do menu.\n");
+                        break;
+                    }
+                    
                 }
                 else if (wybor_sortowania == 2)
                 {
-                    sortListByString(&head,1);
+                    printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
+                    scanf_s("%d", &wybor_ros_mal);
+
+                    if (wybor_ros_mal == 1)
+                    {
+                        sortListByString(&head, 1);
+                        printf("\nSortowanie po imieniu rosnaco wykonane.\n");
+                        break;
+                    }
+                    else if (wybor_ros_mal == 2)
+                    {
+                        //malejaco po imieniu
+                        sortListByString(&head, 0);
+                        printf("\nSortowanie po imieniu malejaco wykonane.\n");
+                        break;
+                    }
+                    else
+                    {
+                        printf("\nBledny wybor sortowania! Powrot do menu.\n");
+                        break;
+                    }
+                  
                     break;
                 }
                 else if (wybor_sortowania == 3)
                 {
-                    set_head_front(&head);
-                    sortuj(&head);
+                    printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
+                    scanf_s("%d", &wybor_ros_mal);
+
+                    if (wybor_ros_mal == 1)
+                    {
+                        //nazwisko rosnaco
+                        set_head_front(&head);
+                        sortuj(&head);
+                        break;
+                    }
+                    else if (wybor_ros_mal == 2)
+                    {
+                        //malejaco
+
+                        break;
+                    }
+                    else
+                    {
+                        printf("\nBledny wybor sortowania! Powrot do menu.\n");
+                        break;
+                    }
+                    
                     break;
                 }
                 else if (wybor_sortowania == 4)
                 {
+                    //Powrot do menu
                     break;
                 }
                 else
                 {
                     printf("\nBledny wybor! Powrot do menu.\n");
+                    break;
                 }                          
 
             }
             case 6:
             {
                 //Import z pliku
-                import_phonebook_from_file("ksiazka_telefonicza.txt", &head);
-                
-                
-                
-                
-                
+                import_phonebook_from_file("kontakty_import.txt", &head);
+                               
                 break;
             }
             case 7:
             {
                 //Eksport do pliku
-                export_phonebook_to_file("ksiazka_telefonicza.txt", head);
-
-
-
-
+                export_phonebook_to_file("kontakty_eksport.txt", head);
 
                 break;
             }
@@ -853,17 +960,7 @@ int main()
         }
 
 
-
-
-
-
     }
-
-
-
-
-
-
 
 
     //Interfejs konsolowy koniec
