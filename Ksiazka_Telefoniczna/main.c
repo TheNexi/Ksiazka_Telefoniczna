@@ -130,7 +130,7 @@ struct Element* search_by_imie(struct Element** head, char imie_s[20])//wyszukuj
 {
     printf("\nSzukane imie: %s \n", imie_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
-    int found = 0;
+    int found = 0; //Zmienna pomocznicza do wyświetlenia informacji o powodzeniu operacji
     while ((*head)->next != NULL)
     {
         if (strcmp(imie_s, (*head)->imie) == 0)
@@ -147,6 +147,7 @@ struct Element* search_by_imie(struct Element** head, char imie_s[20])//wyszukuj
 
     }
 
+    //Wyswietlanie informacji o powodzeniu operacji bądź nie
     if (!found)
     {
         printf("\nNie znaleziono osoby o imieniu %s \n\n", imie_s);
@@ -163,7 +164,7 @@ struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])//
 {
     printf("\nSzukane nazwisko: %s \n", nazwisko_s);
     set_head_front(*head);//ustawia wskaznik na poczatek listy
-    int found = 0;
+    int found = 0; //Zmienna pomocznicza do wyświetlenia informacji o powodzeniu operacji
 
     while (NULL != (*head)->next)
     {
@@ -179,6 +180,8 @@ struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])//
         }
 
     }
+
+    //Wyswietlanie informacji o powodzeniu operacji bądź nie
     if (!found)
     {
         printf("\nNie znaleziono osoby o nazwisku %s \n\n", nazwisko_s);
@@ -196,7 +199,7 @@ struct Element* search_by_nrtel(struct Element** head, int nrtel_s)//wyszukuje p
     printf("\nSzukany nr telefonu: %d \n", nrtel_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
 
-    int found = 0;
+    int found = 0; //Zmienna pomocznicza do wyświetlenia informacji o powodzeniu operacji
     while (NULL != (*head)->next)
     {
         if (nrtel_s == (*head)->nr_tel)
@@ -211,6 +214,8 @@ struct Element* search_by_nrtel(struct Element** head, int nrtel_s)//wyszukuje p
         }
 
     }
+
+    //Wyswietlanie informacji o powodzeniu operacji bądź nie
     if (!found)
     {
         printf("\nNie znaleziono osoby o numerze telefonu %d \n\n", nrtel_s);
@@ -228,7 +233,7 @@ struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], 
 {
     printf("\nSzukana osoba: %s %s \n", imie_s, nazwisko_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
-    int found = 0;
+    int found = 0; //Zmienna pomocznicza do wyświetlenia informacji o powodzeniu operacji
 
     while (NULL != (*head)->next)
     {
@@ -245,6 +250,8 @@ struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], 
         }
 
     }
+
+    //Wyswietlanie informacji o powodzeniu operacji bądź nie
     if (!found)
     {
         printf("\nNie znaleziono osoby %s %s \n\n", imie_s, nazwisko_s);
@@ -262,7 +269,7 @@ bool search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char 
 {
     printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
-    int found = 0;
+    int found = 0; //Zmienna pomocznicza do wyświetlenia informacji o powodzeniu operacji
 
     while (NULL != (*head)->next)
     {
@@ -279,6 +286,8 @@ bool search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char 
         }
 
     }
+
+    //Wyswietlanie informacji o powodzeniu operacji bądź nie
     if (!found)
     {
         printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\n\n", imie_s, nazwisko_s, nrtel_s);
@@ -297,7 +306,7 @@ struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwis
 {
     printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
     set_head_front(head);//ustawia wskaznik na poczatek listy
-    int found = 0;
+    int found = 0; //Zmienna pomocznicza do wyświetlenia informacji o powodzeniu operacji
 
     while (NULL != (*head)->next)
     {
@@ -318,7 +327,7 @@ struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwis
 
     }
 
-    //Wyswietlanie informacji o powodzeniu operacji
+    //Wyswietlanie informacji o powodzeniu operacji bądź nie
     if (!found)
     {
         printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\n\n", imie_s, nazwisko_s, nrtel_s);
@@ -362,39 +371,41 @@ void delete_element(struct Element** head)
 
 }
 
-bool search_and_set(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//wyszukuje po imieniu, nazwisku i numerze
+bool search_and_set(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//Funckja szukająca elementu o podanym imieniu, nazwisku i nr tel
 {
-    if (*head == NULL)
+    if (*head == NULL) //Sprawdzenie czy lista jest pusta
     {
         printf("Lista jest pusta.\n");
         return false;
     }
 
     set_head_front(head); // Ustawienie głowy na początek listy
-    while (NULL != (*head)->next)
+    while (NULL != (*head)->next) // Warunek przejścia do ostatniego elementu
     {
-        if ((strcmp(imie_s, (*head)->imie) == 0) && (strcmp(nazwisko_s, (*head)->nazwisko) == 0) && nrtel_s == (*head)->nr_tel)
+        if ((strcmp(imie_s, (*head)->imie) == 0) && (strcmp(nazwisko_s, (*head)->nazwisko) == 0) && nrtel_s == (*head)->nr_tel) //Warunek znalezienia odpowiedniego elementu
         {
-            return true;
+            return true; //Zwrócenie wartości true jeżeli uda się znaleźć element
             break;
         }
         else
         {
-            *head = (*head)->next;
+            *head = (*head)->next; //Przesuwanie sie po liscie
         }
     }
 
-    return false;
+    return false; //Zwrócenie false jeżeli nie uda się znaleźć elementu o podanych parametrach
     // Jeżeli nie znaleziono elementu, wyświetl komunikat
     printf("Nie znaleziono osoby %s %s %d.\n", imie_s, nazwisko_s, nrtel_s);
 }
 
 
 
-void swap(struct Element** a, struct Element** b)
+void swap(struct Element** a, struct Element** b) 
 {
+    //Zmienna tymczasowa struktury bazowej do przechowywania wartosci pól podczas zamiany miejscami
     struct Element temp = **b;
 
+    //Zamiana nr tel
     temp.nr_tel = (*b)->nr_tel;
     //printf("\n------------------- temporary zmienna %d\n", nr_tel);
     //printf("\n------------------- a zmienna %d\n", (*a)->nr_tel);
@@ -403,17 +414,19 @@ void swap(struct Element** a, struct Element** b)
     (*a)->nr_tel = temp.nr_tel;
     //printf("\n\npo  zamianie a: %d  i b:%d\n ", (*a)->nr_tel, (*b)->nr_tel);
 
+    //Zamiana imion, ograniczając kopie do rozmiaru tablicy -1 znak dla znaku końca ciągu
     strncpy_s(temp.imie, sizeof(temp.imie), (*b)->imie, sizeof(temp.imie) - 1);
     strncpy_s((*b)->imie, sizeof((*b)->imie), (*a)->imie, sizeof((*b)->imie) - 1);
     strncpy_s((*a)->imie, sizeof((*a)->imie), temp.imie, sizeof((*a)->imie) - 1);
 
+    //Zamiana nazwisk, z ograniczeniem -1 znak jak wyżej
     strncpy_s(temp.nazwisko, sizeof(temp.nazwisko), (*b)->nazwisko, sizeof(temp.nazwisko) - 1);
     strncpy_s((*b)->nazwisko, sizeof((*b)->nazwisko), (*a)->nazwisko, sizeof((*b)->nazwisko) - 1);
     strncpy_s((*a)->nazwisko, sizeof((*a)->nazwisko), temp.nazwisko, sizeof((*a)->nazwisko) - 1);
 }
 
 
-void sortList(struct Element** head)
+void sortList(struct Element** head) //Funkcja sortująca po nr telefonu malejąco
 {
     if (*head == NULL || (*head)->next == NULL)
     {
@@ -443,7 +456,7 @@ void sortList(struct Element** head)
     } while (swapped);
 }
 
-void sortListNrTelRos(struct Element** head)
+void sortListNrTelRos(struct Element** head) //Funkcja sortująca po nr telefonu rosnąco
 {
     if (*head == NULL || (*head)->next == NULL)
     {
@@ -493,48 +506,55 @@ void sortListNrTelRos(struct Element** head)
     }
 }*/
 
-void export_phonebook_to_file(char* file_name, struct Element* head)
+void export_phonebook_to_file(char* file_name, struct Element* head) //Funkcja do eksportu elementów listy do pliku
 {
-    FILE *file;
-    if (fopen_s(&file, file_name, "w") != 0) 
+    FILE *file; //Utworzenie zmiennej do operacji na pliku
+    if (fopen_s(&file, file_name, "w") != 0) //Otworzenie pliku o nazwie z parametru w trybie zapisu oraz sprawdzenie czy sprawdzenie czy się powiodło
     {
-        printf("Błąd podczas otwierania pliku.\n");
-        return;
+        printf("Błąd podczas otwierania pliku.\n"); //Komunikat o błędzie
+        return; //Zakończenie pętli jeżeli plik nie zostanie otwarty
     }
 
-    set_head_front(&head);
+    set_head_front(&head); //Ustawienie głowy na początek listy
 
-    while (NULL != head->next)
+    while (NULL != head->next) // Warunek przejścia do ostatniego elementu
     {
-        fprintf(file, "%s\n", head->imie);
+        //Zapis danych do pliku
+        fprintf(file, "%s\n", head->imie); 
         fprintf(file, "%s\n", head->nazwisko);
         fprintf(file, "%d\n", head->nr_tel);
-        head = head->next;
+        head = head->next; //Przesuwanie się po liście
     }
 
-    fclose(file);
+    //Zamkniecie pliku po eksporcie kontakow oraz wyświetlenie komunikatu
+    fclose(file); 
     printf("Dane zostaly zapisane do pliku.\n");
 
 }
 
-void import_phonebook_from_file(char* file_name, struct Element** head) {
-    FILE* file;
-    if (fopen_s(&file, file_name, "r") != 0) 
+void import_phonebook_from_file(char* file_name, struct Element** head) //Funkcja do importu kontaktow z pliku do listy
+{
+    FILE* file; //Utworzenie zmiennej do operacji na pliku
+    if (fopen_s(&file, file_name, "r") != 0) //Otworzenie pliku o nazwie z parametru w trybie odczytu oraz sprawdzenie czy się powiodło
     {
+        //Wyświetelnie komunikatu błędu oraz zakończenie funkcji
         printf("Błąd podczas otwierania pliku.\n");
         return;
     }
     set_head_front(head);
+    //Zmienne tymczasowe do przechowywania wczytywanego kontaktu
     char imie[20];
     char nazwisko[50];
     int nr_tel;
 
-    while (fscanf_s(file, "%19s\n%49s\n%d\n", imie, sizeof(imie), nazwisko, sizeof(nazwisko), &nr_tel) == 3)
+    //Wczytywanie kolejnych lini pliku oraz przypisywanie wczytanych wartości do zmiennych tymczasowych
+    while (fscanf_s(file, "%19s\n%49s\n%d\n", imie, sizeof(imie), nazwisko, sizeof(nazwisko), &nr_tel) == 3) //Warunek == 3 sprawdza czy zostały wczytane dokładnie trzy wartości odpowiadające za informacje o kontakcie
     {
-        insert_before(head, imie, nazwisko, nr_tel);
+        insert_before(head, imie, nazwisko, nr_tel); //Dodawanie nowych elementów do listy
     }
 
-    fclose(file);
+    //Zamknięcie pliku po imporcie kontaktow oraz wyświetlenie komunikatu
+    fclose(file); 
     printf("Dane zostaly wczytane z pliku.\n");
 }
 
@@ -563,22 +583,29 @@ void sortListByString(struct Element** head,bool dir)
         lptr = ptr1;
     } while (swapped);
 }
-int swap_string(struct Element* a, struct Element* b) {
+int swap_string(struct Element* a, struct Element* b) 
+{
+    //Zmienne tymczasowe do przechowywania wartosci pól podczas zamiany miejscami
     char temp_imie[20];
     char temp_nazwisko[50];
+
+    //Zamiana nr tel
     int nr_tel=a->nr_tel;
     a->nr_tel = b->nr_tel;
     b->nr_tel = nr_tel;
 
+    //Zamiana imion, ograniczając kopie do rozmiaru tablicy -1 znak dla znaku końca ciągu
     strncpy_s(temp_imie, sizeof(temp_imie), a->imie, sizeof(temp_imie) - 1);
     strncpy_s(a->imie, sizeof(a->imie), b->imie, sizeof(a->imie) - 1);
     strncpy_s(b->imie, sizeof(b->imie), temp_imie, sizeof(b->imie) - 1);
 
+    //Zamiana nazwisk, z ograniczeniem -1 znak jak wyżej
     strncpy_s(temp_nazwisko, sizeof(temp_nazwisko), a->nazwisko, sizeof(temp_nazwisko) - 1);
     strncpy_s(a->nazwisko, sizeof(a->nazwisko), b->nazwisko, sizeof(a->nazwisko) - 1);
     strncpy_s(b->nazwisko, sizeof(b->nazwisko), temp_nazwisko, sizeof(b->nazwisko) - 1);
 }
-int compareStrings(const char* a, const char* b,bool dir) {
+int compareStrings(const char* a, const char* b,bool dir) 
+{
     if (dir==1)
     return strcmp(a, b);
     else 
@@ -691,25 +718,30 @@ int main()
     //print_list(&head);
 
 
-
     //Interfejs konsolowy start
     printf("Oto program ksiazki telefonicznej\n");
+    
+    //Zmienne potrzebne do menu
     int wybor=0;
     int wybor_sortowania = 0;
     int wybor_ros_mal = 0;
+
+    //Zmienne do dodawania kontatku
     char imie[30];
     char nazwisko[50];
     char nr_tel_temp[30];
     int nr_tel = 0;
     
+    //Zmienne do edycji kontaktu
     char imie_edycja[30];
     char nazwisko_edycja[50];
     int nr_tel_edycja=0;
     int nr_tel_temp_edycja=0;
 
 
-    while (wybor!=8)
+    while (wybor!=8) //Pętla główna menu
     {
+        //Menu podstawowe
         printf("\nWybierz opcje dzialania:\n");
         printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Sortuj liste\n6. Import kontakow z pliku\n7. Eksport kontaktow do pliku\n8. Zakoncz program\nWybrana opcja: ");
         scanf_s("%d", &wybor);
@@ -741,7 +773,7 @@ int main()
 
                 printf("Podaj nr tel: ");
                 fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
-                nr_tel = atoi(nr_tel_temp);
+                nr_tel = atoi(nr_tel_temp); //Konwersja string to int
                 set_head_front(&head);
                 //set_head_back(&head);
                 insert_before(&head, imie, nazwisko, nr_tel);
@@ -811,10 +843,10 @@ int main()
 
                 printf("Podaj nr tel: ");
                 fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
-                nr_tel = atoi(nr_tel_temp);
+                nr_tel = atoi(nr_tel_temp); //Konwersja string to int
 
                 
-                if (search_and_set(&head, imie, nazwisko, nr_tel))
+                if (search_and_set(&head, imie, nazwisko, nr_tel)) //Ustawienie głowy na osobie do usuniecia
                 {
                     delete_element(&head);
                     printf("\nUsunieto osobe %s %s %d\n", imie, nazwisko, nr_tel);
@@ -846,7 +878,7 @@ int main()
 
                     if (wybor_ros_mal == 1)
                     {
-                        //rosnaco nr tel
+                        //Sortowanie rosnaco po nr telefonu
                         sortListNrTelRos(&head);
                         print_values(&head);
                         printf("\nSortowanie po numerze telefonu rosnaco wykonane.\n");
@@ -854,13 +886,14 @@ int main()
                     }
                     else if (wybor_ros_mal == 2)
                     {
-                        //malejaco
+                        //Sortowanie malejaco po nr telefonu
                         sortList(&head);
                         printf("\nSortowanie po numerze telefonu malejaco wykonane.\n");
                         break;
                     }
                     else
                     {
+                        //Obsluga blednego wyboru
                         printf("\nBledny wybor sortowania! Powrot do menu.\n");
                         break;
                     }
@@ -873,19 +906,21 @@ int main()
 
                     if (wybor_ros_mal == 1)
                     {
+                        //Sortowanie rosnaco po imieniu
                         sortListByString(&head, 1);
                         printf("\nSortowanie po imieniu rosnaco wykonane.\n");
                         break;
                     }
                     else if (wybor_ros_mal == 2)
                     {
-                        //malejaco po imieniu
+                        //Sortowanie malejaco po imieniu
                         sortListByString(&head, 0);
                         printf("\nSortowanie po imieniu malejaco wykonane.\n");
                         break;
                     }
                     else
                     {
+                        //Obsluga błędnego wyboru
                         printf("\nBledny wybor sortowania! Powrot do menu.\n");
                         break;
                     }
@@ -899,19 +934,20 @@ int main()
 
                     if (wybor_ros_mal == 1)
                     {
-                        //nazwisko rosnaco
+                        //Sortowanie rosnąco po nazwisku
                         set_head_front(&head);
                         sortuj(&head);
                         break;
                     }
                     else if (wybor_ros_mal == 2)
                     {
-                        //malejaco
+                        //Sortowanie malejąco po nazwisku
 
                         break;
                     }
                     else
                     {
+                        //Obsługa błędnego wyboru
                         printf("\nBledny wybor sortowania! Powrot do menu.\n");
                         break;
                     }
@@ -925,6 +961,7 @@ int main()
                 }
                 else
                 {
+                    //Obsługa błędnego wyboru
                     printf("\nBledny wybor! Powrot do menu.\n");
                     break;
                 }                          
