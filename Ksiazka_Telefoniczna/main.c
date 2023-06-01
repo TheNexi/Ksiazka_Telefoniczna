@@ -512,6 +512,7 @@ void sortListByString(struct Element** head,bool dir)
         while (ptr1->next != lptr) {
             if (compareStrings(ptr1->imie, ptr1->next->imie,dir) > 0) {
                 swap_string(ptr1, ptr1->next);
+                printf("dziala");
                 swapped = 1;
             }
             ptr1 = ptr1->next;
@@ -538,6 +539,71 @@ int compareStrings(const char* a, const char* b,bool dir) {
     else 
     return strcmp(b, a);
 }
+// Funkcja do porównywania dwóch nazwisk
+int compare(const char* a, const char* b)
+{
+    
+        return strcmp(b, a); // Porównanie w odwrotnej kolejności (malejąco)
+  
+}
+
+// Funkcja sortująca listę malejąco alfabetycznie według nazwiska
+void sortuj(struct Element** lista) {
+    struct Element* current;
+    struct Element* next;
+    int swapped;
+
+    // Sprawdź, czy lista jest pusta lub zawiera tylko jeden element
+    if (*lista == NULL || (*lista)->next == NULL)
+        return;
+
+    do {
+        
+        swapped = 0;
+        current = *lista;
+
+        while (current->next != NULL) {
+            
+            next = current->next;
+            if ((*lista)->nazwisko==NULL||next==NULL||(*lista)==NULL)
+            {
+                printf("\n-------------------KONIEC");
+                swapped = 0;
+                break;
+            }
+           printf("\naktualne nazwisko: %s\n",current->nazwisko);
+            // Porównaj nazwiska
+            if (compare(current->nazwisko, next->nazwisko) > 0) {
+                // Zamień kolejność elementów
+                if (current->previous != NULL)
+                    current->previous->next = next;
+                else
+                    *lista = next;
+
+                next->previous = current->previous;
+                current->previous = next;
+                current->next = next->next;
+
+                if (next->next != NULL)
+                    next->next->previous = current;
+
+                next->next = current;
+                swapped = 1;
+                
+            }
+            else {
+                current = current->next;
+            }
+        }
+        if (swapped == 0)
+        {
+            printf("\n-------------------KONIEC");
+            swapped = 0;
+            break;
+        }
+    } while (swapped);
+}
+
 
 int main()
 {
@@ -560,18 +626,18 @@ int main()
     //TEST
     //Dodanie elementów do listy
     /*
-    insert_before(&head, "Kacper", "Kowalski", 111111111);
-    insert_before(&head, "Jan", "Adamczyk", 222222222);
-    insert_before(&head, "Piotr", "Adamowicz", 333333333);
-    insert_before(&head, "Filip", "Krawczyk", 987654321);
-    insert_before(&head, "Tomasz", "Gracz", 123456789);
+    insert_before(&head, "kacper", "kowalski", 111111111);
+    insert_before(&head, "jan", "adamczyk", 222222222);
+    insert_before(&head, "piotr", "adamowicz", 333333333);
+    insert_before(&head, "filip", "krawczyk", 987654321);
+    insert_before(&head, "tomasz", "gracz", 123456789);
     */
     
-   /* insert_before(&head, "Kacper\n", "Kowals\n", 111111111);
+    insert_before(&head, "Kacper\n", "Kowals\n", 111111111);
     insert_before(&head, "Jan\n", "Adamcz\n", 222222222);
     insert_before(&head, "Piotr\n", "Adamow\n", 333333333);
     insert_before(&head, "Filip\n", "Krawczyk\n", 987654321);
-    insert_before(&head, "Tomasz\n", "Gracz\n", 123456789);*/
+    insert_before(&head, "Tomasz\n", "Gracz\n", 123456789);
     
     print_list(&head);
     
@@ -605,6 +671,7 @@ int main()
                 //Wyswietlanie listy
                 set_head_front(&head);
                 print_list(&head);
+                printf("\n\nostatnia osoba %s", head->nazwisko);
                 break;
             }
             case 2:
@@ -734,6 +801,8 @@ int main()
                 }
                 else if (wybor_sortowania == 3)
                 {
+                    set_head_front(&head);
+                    sortuj(&head);
                     break;
                 }
                 else if (wybor_sortowania == 4)
