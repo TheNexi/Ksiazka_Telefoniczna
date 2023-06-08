@@ -5,12 +5,13 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
-
+int max_id;
 struct Element // Struktura bazowa
 {
     char imie[20];
     char nazwisko[50];
     int nr_tel;
+    int ID;
     struct Element* previous; // wskaznik na poprzedni element w liscie
     struct Element* next; // wskaznik na nastepny element
 };
@@ -22,7 +23,7 @@ struct Element* create_list() //tworzenie nowego węzła
         printf("blad przydzialu pamieci");
         return 0;
     }
-
+    max_id = 0;
     new_node->next = NULL;
     new_node->previous = NULL;
     return new_node; // zwracanie wskaznika, ktory bedzie poczatkiem listy
@@ -40,6 +41,8 @@ struct Element* insert_before(struct Element** head, char imie[], char nazwisko[
     strcpy_s(new_node->imie, sizeof(new_node->imie), imie); // kopiowanie imienia z parametru funkcji do pola bazowego funkcji
     strcpy_s(new_node->nazwisko, sizeof(new_node->nazwisko), nazwisko); // kopiowanie nazwiska z parametru funkcji do pola bazowego funkcji
     new_node->nr_tel = nr_tel; // kopiowanie nr telefonu z parametru funkcji do pola bazowego funkcji
+    max_id += 1;
+    new_node->ID = max_id;
 
     
     new_node->next = *head; // ustawienie wskaźnika następnego elementu na węzeł głowy listy
@@ -97,9 +100,10 @@ void print_list(struct Element** head)//wyswietla cala liste
 
     while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
-        printf("Imie: %s\n", (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
+        printf("ID:%d\nImie: %s\n",(*head)->ID, (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
         printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
-        printf("Numer telefonu: %d\n\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
+        printf("Numer telefonu: %d\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
+
         *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
     }
 
@@ -397,6 +401,32 @@ bool search_and_set(struct Element** head, char imie_s[20], char nazwisko_s[50],
     // Jeżeli nie znaleziono elementu, wyświetl komunikat
     printf("Nie znaleziono osoby %s %s %d.\n", imie_s, nazwisko_s, nrtel_s);
 }
+bool search_id_and_set(struct Element** head, int id)//Funckja szukająca elementu o podanym imieniu, nazwisku i nr tel
+{
+    if (*head == NULL) //Sprawdzenie czy lista jest pusta
+    {
+        printf("Lista jest pusta.\n");
+        return false;
+    }
+
+    set_head_front(head); // Ustawienie głowy na początek listy
+    while (NULL != (*head)->next) // Warunek przejścia do ostatniego elementu
+    {
+        if  (id == (*head)->ID) //Warunek znalezienia odpowiedniego elementu
+        {
+            return true; //Zwrócenie wartości true jeżeli uda się znaleźć element
+            break;
+        }
+        else
+        {
+            *head = (*head)->next; //Przesuwanie sie po liscie
+        }
+    }
+
+    return false; //Zwrócenie false jeżeli nie uda się znaleźć elementu o podanych parametrach
+    // Jeżeli nie znaleziono elementu, wyświetl komunikat
+    printf("Nie znaleziono osoby o id %d\n", id);
+}
 
 
 
@@ -413,6 +443,10 @@ void swap(struct Element** a, struct Element** b)
     //printf("\n------------------- temporary zmienna %d\n", nr_tel);
     (*a)->nr_tel = temp.nr_tel;
     //printf("\n\npo  zamianie a: %d  i b:%d\n ", (*a)->nr_tel, (*b)->nr_tel);
+
+    temp.ID = (*b)->ID;
+    (*b)->ID = (*a)->ID;
+    (*a)->ID = temp.ID;
 
     //Zamiana imion, ograniczając kopie do rozmiaru tablicy -1 znak dla znaku końca ciągu
     strncpy_s(temp.imie, sizeof(temp.imie), (*b)->imie, sizeof(temp.imie) - 1);
@@ -593,6 +627,11 @@ int swap_string(struct Element* a, struct Element* b)
     int nr_tel=a->nr_tel;
     a->nr_tel = b->nr_tel;
     b->nr_tel = nr_tel;
+ 
+    int temp = a->ID;
+    temp = b->ID;
+    b->ID = a->ID;
+    a->ID = temp;
 
     //Zamiana imion, ograniczając kopie do rozmiaru tablicy -1 znak dla znaku końca ciągu
     strncpy_s(temp_imie, sizeof(temp_imie), a->imie, sizeof(temp_imie) - 1);
@@ -679,7 +718,7 @@ void sortuj(struct Element** lista) {
 
 int main()
 {
-    
+
     //TEST CZY DZIALA ALLEGRO 
     /*
     ALLEGRO_DISPLAY* display = NULL;
@@ -703,14 +742,14 @@ int main()
     insert_before(&head, "piotr", "adamowicz", 333333333);
     insert_before(&head, "filip", "krawczyk", 987654321);
     insert_before(&head, "tomasz", "gracz", 123456789);
-   
-    
+
+
     insert_before(&head, "Kacper\n", "Kowals\n", 111111111);
     insert_before(&head, "Jan\n", "Adamcz\n", 222222222);
     insert_before(&head, "Piotr\n", "Adamow\n", 333333333);
     insert_before(&head, "Filip\n", "Krawczyk\n", 987654321);
     insert_before(&head, "Tomasz\n", "Gracz\n", 123456789);
-    
+
     */
 
     //print_list(&head);
@@ -720,9 +759,9 @@ int main()
 
     //Interfejs konsolowy start
     printf("Oto program ksiazki telefonicznej\n");
-    
+
     //Zmienne potrzebne do menu
-    int wybor=0;
+    int wybor = 0;
     int wybor_sortowania = 0;
     int wybor_ros_mal = 0;
 
@@ -731,276 +770,302 @@ int main()
     char nazwisko[50];
     char nr_tel_temp[30];
     int nr_tel = 0;
-    
+
     //Zmienne do edycji kontaktu
     char imie_edycja[30];
     char nazwisko_edycja[50];
-    int nr_tel_edycja=0;
-    int nr_tel_temp_edycja=0;
+    int nr_tel_edycja = 0;
+    int nr_tel_temp_edycja = 0;
 
 
-    while (wybor!=8) //Pętla główna menu
+    while (wybor != 8) //Pętla główna menu
     {
         //Menu podstawowe
         printf("\nWybierz opcje dzialania:\n");
         printf("1. Wyswietl ksiazke telefoniczna\n2. Dodaj osobe do ksiazki telefonicznej\n3. Edytuj osobe w ksiazce telefonicznej\n4. Usun osobe z ksiazki telefonicznej\n5. Sortuj liste\n6. Import kontakow z pliku\n7. Eksport kontaktow do pliku\n8. Zakoncz program\nWybrana opcja: ");
         scanf_s("%d", &wybor);
-        switch(wybor)         
-        { 
-            case 1:
+        switch (wybor)
+        {
+        case 1:
+        {
+            //Wyswietlanie listy
+            set_head_front(&head);
+            print_list(&head);
+            printf("\n\nostatnia osoba %s", head->nazwisko);
+            break;
+        }
+        case 2:
+        {
+            //Dodawanie osoby       
+            while (getchar() != "\n")
             {
-                //Wyswietlanie listy
-                set_head_front(&head);
-                print_list(&head);
-                printf("\n\nostatnia osoba %s", head->nazwisko);
+                printf("Podaj imie: ");
+                fgets(imie, sizeof(imie), stdin);
                 break;
             }
-            case 2:
+
+
+            printf("Podaj nazwisko: ");
+            fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+            printf("Podaj nr tel: ");
+            fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+            nr_tel = atoi(nr_tel_temp); //Konwersja string to int
+            set_head_front(&head);
+            //set_head_back(&head);
+            insert_before(&head, imie, nazwisko, nr_tel);
+
+            break;
+
+        }
+        case 3:
+        {
+            //Edytowanie osoby
+            while (getchar() != "\n")
             {
-                //Dodawanie osoby       
-                while (getchar() != "\n")
-                {
-                    printf("Podaj imie: ");
-                    fgets(imie, sizeof(imie), stdin);
-                    break;
-                }
-
-
-                printf("Podaj nazwisko: ");
-                fgets(nazwisko, sizeof(nazwisko), stdin);
-
-
-
-                printf("Podaj nr tel: ");
-                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
-                nr_tel = atoi(nr_tel_temp); //Konwersja string to int
-                set_head_front(&head);
-                //set_head_back(&head);
-                insert_before(&head, imie, nazwisko, nr_tel);
-                
+                printf("Podaj imie osoby do edycji: ");
+                fgets(imie, sizeof(imie), stdin);
                 break;
+            }
+
+
+            printf("Podaj nazwisko osoby do edycji: ");
+            fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+            printf("Podaj nr tel osoby do edycji: ");
+            fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+            nr_tel = atoi(nr_tel_temp);
+
+            if (search_by_imie_naziwsko_nrtel(&head, imie, nazwisko, nr_tel))
+            {
+                printf("Podaj imie na jakie chcesz zmienic: ");
+                fgets(imie_edycja, sizeof(imie_edycja), stdin);
+
+                printf("Podaj nazwisko na jakie chcesz zmienic: ");
+                fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
+
+
+                printf("Podaj nr tel na jakie chcesz zmienic: ");
+                fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
+                nr_tel_edycja = atoi(nr_tel_temp_edycja);
+                edit_contact(&head, imie, nazwisko, nr_tel, imie_edycja, nazwisko_edycja, nr_tel_edycja);
 
             }
-            case 3:
+            else
             {
-                //Edytowanie osoby
-                while (getchar() != "\n")
-                {
-                    printf("Podaj imie osoby do edycji: ");
-                    fgets(imie, sizeof(imie), stdin);
-                    break;
-                }
-
-
-                printf("Podaj nazwisko osoby do edycji: ");
-                fgets(nazwisko, sizeof(nazwisko), stdin);
-
-
-
-                printf("Podaj nr tel osoby do edycji: ");
-                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
-                nr_tel = atoi(nr_tel_temp);
-
-                if (search_by_imie_naziwsko_nrtel(&head, imie, nazwisko, nr_tel))
-                { 
-                    printf("Podaj imie na jakie chcesz zmienic: ");
-                    fgets(imie_edycja, sizeof(imie_edycja), stdin);
-
-                    printf("Podaj nazwisko na jakie chcesz zmienic: ");
-                    fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
-
-
-                    printf("Podaj nr tel na jakie chcesz zmienic: ");
-                    fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
-                    nr_tel_edycja = atoi(nr_tel_temp_edycja);
-                    edit_contact(&head, imie, nazwisko, nr_tel, imie_edycja, nazwisko_edycja, nr_tel_edycja);
-
-                }
-                else
-                {
-                    printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\nPrzerwano edycje!\n", imie, nazwisko, nr_tel);
-                }
-                
-                break;
-
+                printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\nPrzerwano edycje!\n", imie, nazwisko, nr_tel);
             }
-            case 4:
+
+            break;
+
+        }
+        case 4:
+        {
+            printf("1.Po imieniu, nazwisku numerze telefonu.\n2. po ID\n");
+            int wybor;
+            wybor = 0;
+            scanf_s("%d", &wybor);
+            if (wybor == 1)
             {
                 //Usuwanie osoby z listy
-
-                while (getchar() != "\n")
                 {
-                    printf("Podaj imie: ");
-                    fgets(imie, sizeof(imie), stdin);
+                    while (getchar() != "\n")
+                    {
+                        printf("Podaj imie: ");
+                        fgets(imie, sizeof(imie), stdin);
+                        break;
+                    }
+
+                    printf("Podaj nazwisko: ");
+                    fgets(nazwisko, sizeof(nazwisko), stdin);
+
+                    printf("Podaj nr tel: ");
+                    fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+                    nr_tel = atoi(nr_tel_temp); //Konwersja string to int
+
+                    if (search_and_set(&head, imie, nazwisko, nr_tel)) //Ustawienie głowy na osobie do usuniecia
+                    {
+                        delete_element(&head);
+                        printf("\nUsunieto osobe %s %s %d\n", imie, nazwisko, nr_tel);
+                    }
+                    else
+                    {
+                        printf("\nNie znaleziono takiej osoby\n");
+                    }
+
                     break;
                 }
-
-
-                printf("Podaj nazwisko: ");
-                fgets(nazwisko, sizeof(nazwisko), stdin);
-
-
-
-                printf("Podaj nr tel: ");
-                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
-                nr_tel = atoi(nr_tel_temp); //Konwersja string to int
-
-                
-                if (search_and_set(&head, imie, nazwisko, nr_tel)) //Ustawienie głowy na osobie do usuniecia
+            }
+            if (wybor == 2)
+            {
+                //Usuwanie osoby z listy
                 {
-                    delete_element(&head);
-                    printf("\nUsunieto osobe %s %s %d\n", imie, nazwisko, nr_tel);
+
+
+                    int id;
+                    printf("Podaj ID : ");
+                    scanf_s("%d", &id);
+
+                    if (search_id_and_set(&head, id)) //Ustawienie głowy na osobie do usuniecia
+                    {
+                        delete_element(&head);
+                        printf("\nUsunieto osobe");
+                    }
+                    else
+                    {
+                        printf("\nNie znaleziono takiej osoby\n");
+                    }
+
+                    break;
+
+                }
+            }
+        }
+        case 5:
+        {
+            //Sortowanie
+            set_head_front(&head);
+
+            while (getchar() != "\n")
+            {
+                printf("\n1. Sortowanie po nr telefonu\n2. Sortowanie po imieniu\n3. Sortowanie po nazwisku\n4. Powrot do menu\nWybrana opcja: ");
+                scanf_s("%d", &wybor_sortowania);
+                break;
+            }
+            if (wybor_sortowania == 1)
+            {
+                printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
+                scanf_s("%d", &wybor_ros_mal);
+
+                if (wybor_ros_mal == 1)
+                {
+                    //Sortowanie rosnaco po nr telefonu
+                    sortListNrTelRos(&head);
+                    print_values(&head);
+                    printf("\nSortowanie po numerze telefonu rosnaco wykonane.\n");
+                    break;
+                }
+                else if (wybor_ros_mal == 2)
+                {
+                    //Sortowanie malejaco po nr telefonu
+                    sortList(&head);
+                    printf("\nSortowanie po numerze telefonu malejaco wykonane.\n");
+                    break;
                 }
                 else
                 {
-                    printf("\nNie znaleziono takiej osoby\n");
+                    //Obsluga blednego wyboru
+                    printf("\nBledny wybor sortowania! Powrot do menu.\n");
+                    break;
+                }
+
+            }
+            else if (wybor_sortowania == 2)
+            {
+                printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
+                scanf_s("%d", &wybor_ros_mal);
+
+                if (wybor_ros_mal == 1)
+                {
+                    //Sortowanie rosnaco po imieniu
+                    sortListByString(&head, 1);
+                    printf("\nSortowanie po imieniu rosnaco wykonane.\n");
+                    break;
+                }
+                else if (wybor_ros_mal == 2)
+                {
+                    //Sortowanie malejaco po imieniu
+                    sortListByString(&head, 0);
+                    printf("\nSortowanie po imieniu malejaco wykonane.\n");
+                    break;
+                }
+                else
+                {
+                    //Obsluga błędnego wyboru
+                    printf("\nBledny wybor sortowania! Powrot do menu.\n");
+                    break;
                 }
 
                 break;
-
-
             }
-            case 5:
+            else if (wybor_sortowania == 3)
             {
-                //Sortowanie
-                set_head_front(&head);
-                
-                while (getchar() != "\n")
+                printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
+                scanf_s("%d", &wybor_ros_mal);
+
+                if (wybor_ros_mal == 1)
                 {
-                    printf("\n1. Sortowanie po nr telefonu\n2. Sortowanie po imieniu\n3. Sortowanie po nazwisku\n4. Powrot do menu\nWybrana opcja: ");
-                    scanf_s("%d", &wybor_sortowania);
+                    //Sortowanie rosnąco po nazwisku
+                    set_head_front(&head);
+                    sortuj(&head);
                     break;
                 }
-                if (wybor_sortowania == 1)
+                else if (wybor_ros_mal == 2)
                 {
-                    printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
-                    scanf_s("%d", &wybor_ros_mal);
+                    //Sortowanie malejąco po nazwisku
 
-                    if (wybor_ros_mal == 1)
-                    {
-                        //Sortowanie rosnaco po nr telefonu
-                        sortListNrTelRos(&head);
-                        print_values(&head);
-                        printf("\nSortowanie po numerze telefonu rosnaco wykonane.\n");
-                        break;
-                    }
-                    else if (wybor_ros_mal == 2)
-                    {
-                        //Sortowanie malejaco po nr telefonu
-                        sortList(&head);
-                        printf("\nSortowanie po numerze telefonu malejaco wykonane.\n");
-                        break;
-                    }
-                    else
-                    {
-                        //Obsluga blednego wyboru
-                        printf("\nBledny wybor sortowania! Powrot do menu.\n");
-                        break;
-                    }
-                    
-                }
-                else if (wybor_sortowania == 2)
-                {
-                    printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
-                    scanf_s("%d", &wybor_ros_mal);
-
-                    if (wybor_ros_mal == 1)
-                    {
-                        //Sortowanie rosnaco po imieniu
-                        sortListByString(&head, 1);
-                        printf("\nSortowanie po imieniu rosnaco wykonane.\n");
-                        break;
-                    }
-                    else if (wybor_ros_mal == 2)
-                    {
-                        //Sortowanie malejaco po imieniu
-                        sortListByString(&head, 0);
-                        printf("\nSortowanie po imieniu malejaco wykonane.\n");
-                        break;
-                    }
-                    else
-                    {
-                        //Obsluga błędnego wyboru
-                        printf("\nBledny wybor sortowania! Powrot do menu.\n");
-                        break;
-                    }
-                  
-                    break;
-                }
-                else if (wybor_sortowania == 3)
-                {
-                    printf("\n1. Sortowanie rosnaco\n2. Sortowanie malejaco\n3. Powrot do menu\nWybrana opcja: ");
-                    scanf_s("%d", &wybor_ros_mal);
-
-                    if (wybor_ros_mal == 1)
-                    {
-                        //Sortowanie rosnąco po nazwisku
-                        set_head_front(&head);
-                        sortuj(&head);
-                        break;
-                    }
-                    else if (wybor_ros_mal == 2)
-                    {
-                        //Sortowanie malejąco po nazwisku
-
-                        break;
-                    }
-                    else
-                    {
-                        //Obsługa błędnego wyboru
-                        printf("\nBledny wybor sortowania! Powrot do menu.\n");
-                        break;
-                    }
-                    
-                    break;
-                }
-                else if (wybor_sortowania == 4)
-                {
-                    //Powrot do menu
                     break;
                 }
                 else
                 {
                     //Obsługa błędnego wyboru
-                    printf("\nBledny wybor! Powrot do menu.\n");
+                    printf("\nBledny wybor sortowania! Powrot do menu.\n");
                     break;
-                }                          
-
-            }
-            case 6:
-            {
-                //Import z pliku
-                import_phonebook_from_file("kontakty_import.txt", &head);
-                               
-                break;
-            }
-            case 7:
-            {
-                //Eksport do pliku
-                export_phonebook_to_file("kontakty_eksport.txt", head);
+                }
 
                 break;
             }
-            case 8:
+            else if (wybor_sortowania == 4)
             {
-                //Zakończ program
-                break;
-
-
-            }
-            default:
-            {
-                //Obsluga blednego wyboru
-                printf("ERROR! Wybierz opcje od 1 do 5");
+                //Powrot do menu
                 break;
             }
+            else
+            {
+                //Obsługa błędnego wyboru
+                printf("\nBledny wybor! Powrot do menu.\n");
+                break;
+            }
+
+        }
+        case 6:
+        {
+            //Import z pliku
+            import_phonebook_from_file("kontakty_import.txt", &head);
+
+            break;
+        }
+        case 7:
+        {
+            //Eksport do pliku
+            export_phonebook_to_file("kontakty_eksport.txt", head);
+
+            break;
+        }
+        case 8:
+        {
+            //Zakończ program
+            break;
+
+
+        }
+        default:
+        {
+            //Obsluga blednego wyboru
+            printf("ERROR! Wybierz opcje od 1 do 5");
+            break;
+        }
+            }
+
+
         }
 
 
+        //Interfejs konsolowy koniec
+
+        return 0;
     }
-
-
-    //Interfejs konsolowy koniec
-    
-    return 0;
-}
