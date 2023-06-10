@@ -24,6 +24,7 @@ struct Element* create_list() //tworzenie nowego węzła
         return 0;
     }
     max_id = 0;
+    new_node->ID = 0;
     new_node->next = NULL;
     new_node->previous = NULL;
     return new_node; // zwracanie wskaznika, ktory bedzie poczatkiem listy
@@ -100,13 +101,22 @@ void print_list(struct Element** head)//wyswietla cala liste
 
     while (NULL != (*head)->next) // wykonywanie pętli do momentu osiągniecia ostatniego elementu listy
     {
-        printf("ID:%d\nImie: %s\n",(*head)->ID, (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
-        printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
-        printf("Numer telefonu: %d\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
-
+        if ((*head)->ID != NULL)
+        {
+            printf("ID:%d\nImie: %s\n", (*head)->ID, (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
+            printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
+            printf("Numer telefonu: %d\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
+            printf("__________________________\n");
+        }
         *head = (*head)->next; // przesuniecie wskaźnika na następny element listy
     }
-
+    if ((*head)->ID != 0)
+    {
+        printf("ID:%d\nImie: %s\n", (*head)->ID, (*head)->imie); // wyswietlenie imienia osoby obecnie wskazywanej przez głowę listy
+        printf("Nazwisko: %s\n", (*head)->nazwisko); // wyswietlenie nazwiska osoby obecnie wskazywanej przez głowę listy
+        printf("Numer telefonu: %d\n", (*head)->nr_tel); // wyświetlenie numeru telefonu osoby obecnie wskazywanej przez głowę listy
+        printf("__________________________\n");
+    }
 }
 void print_values(struct Element** head)//wyswietla dane elementu w liscie
 {
@@ -617,6 +627,31 @@ void sortListByString(struct Element** head,bool dir)
         lptr = ptr1;
     } while (swapped);
 }
+void sortListByString_surname(struct Element** head, bool dir)
+{
+    //set_head_front(head);
+    int swapped;
+    struct Element* ptr1;
+    struct Element* lptr = NULL;
+
+    if (*head == NULL)
+        return;
+
+    do {
+        swapped = 0;
+        ptr1 = *head;
+
+        while (ptr1->next != lptr) {
+            if (compareStrings(ptr1->nazwisko, ptr1->next->nazwisko, dir) > 0) {
+                swap_string(ptr1, ptr1->next);
+                printf("dziala");
+                swapped = 1;
+            }
+            ptr1 = ptr1->next;
+        }
+        lptr = ptr1;
+    } while (swapped);
+}
 int swap_string(struct Element* a, struct Element* b) 
 {
     //Zmienne tymczasowe do przechowywania wartosci pól podczas zamiany miejscami
@@ -791,7 +826,7 @@ int main()
             //Wyswietlanie listy
             set_head_front(&head);
             print_list(&head);
-            printf("\n\nostatnia osoba %s", head->nazwisko);
+           
             break;
         }
         case 2:
@@ -1001,13 +1036,14 @@ int main()
                 {
                     //Sortowanie rosnąco po nazwisku
                     set_head_front(&head);
-                    sortuj(&head);
+
+                    sortListByString_surname(&head, 1);
                     break;
                 }
                 else if (wybor_ros_mal == 2)
                 {
                     //Sortowanie malejąco po nazwisku
-
+                    sortListByString_surname(&head, 0);
                     break;
                 }
                 else
@@ -1035,7 +1071,7 @@ int main()
         case 6:
         {
             //Import z pliku
-            import_phonebook_from_file("kontakty_import.txt", &head);
+            import_phonebook_from_file("kontakty_eksport.txt", &head);
 
             break;
         }
