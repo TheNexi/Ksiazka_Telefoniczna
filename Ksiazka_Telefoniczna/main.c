@@ -2,11 +2,19 @@
 #include <stdio.h>
 #include <string.h>
 #include <allegro5/allegro5.h>
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_ttf.h>
+
+
+
+/**
+* @brief zmienna przechowująca aktualnie największe ID
+*/
 
 int max_id;
-struct Element // Struktura bazowa
+/**
+*
+* @brief Struktura bazowa zawierająca wskazniki na poprzedni i nastepny element wraz z niezbednymi polami typu string tj. imie, nazwisko, nr _tel
+*/
+struct Element
 {
     char imie[20];
     char nazwisko[50];
@@ -15,7 +23,13 @@ struct Element // Struktura bazowa
     struct Element* previous; // wskaznik na poprzedni element w liscie
     struct Element* next; // wskaznik na nastepny element
 };
-struct Element* create_list() //tworzenie nowego węzła
+
+/** 
+*
+* @brief funkcja tworząca liste
+* @return zwraca wskaznik na nowy wezel
+*/
+struct Element* create_list() 
 {
     struct Element* new_node = (struct Element*)malloc(sizeof(struct Element)); // dynamiczna alokacja pamięci dla nowego węzła
     if (NULL == new_node) // sprawdzanie czy alokacja sie powiodła
@@ -30,6 +44,15 @@ struct Element* create_list() //tworzenie nowego węzła
     return new_node; // zwracanie wskaznika, ktory bedzie poczatkiem listy
 
 }
+/**  
+* 
+* @brief dodaje nowy element do listy, przypisując kolejno podane w parametrze listy
+* @param **head to podwójny wskaznik na ,,głowę" listy
+* @param imie[] to ciag znakow bedacy składową nowego elementu
+* @param nazwisko[] to ciag znakow bedacy składową nowego elementu
+* @param nr_tel to ciag znakow bedacy składową nowego elementu
+* @return zwraca ten element
+*/
 struct Element* insert_before(struct Element** head, char imie[], char nazwisko[], int nr_tel)//dodaje element po lewej stronie od ,,glowy"
 {
     
@@ -44,7 +67,6 @@ struct Element* insert_before(struct Element** head, char imie[], char nazwisko[
     new_node->nr_tel = nr_tel; // kopiowanie nr telefonu z parametru funkcji do pola bazowego funkcji
     max_id += 1;
     new_node->ID = max_id;
-
     
     new_node->next = *head; // ustawienie wskaźnika następnego elementu na węzeł głowy listy
     
@@ -52,50 +74,14 @@ struct Element* insert_before(struct Element** head, char imie[], char nazwisko[
     (*head)->previous = new_node; // ustawienie wskaźnika poprzedniego elementu w głowie listy na nowy węzeł
     *head = new_node; // ustawienie wskaźnika na początek listy na nowy węzeł
   
-
-
-
     return new_node; // zwrócenie wskaźnika na nowy węzeł
-
 }
-
-/*
-Funkcja do poprawienia 
-struct Element* insert_after(struct Element** head, char imie[], char nazwisko[], int nr_tel)//dodaje element po prawej stronie od ,,glowy" do poprawki
-{
-
-    struct Element* new_node = (struct Element*)malloc(sizeof(struct Element));
-    if (NULL == new_node)
-    {
-        printf("blad przydzialu pamieci");
-        return 0;
-    }
-    strcpy_s(new_node->imie, sizeof(new_node->imie), imie);
-    strcpy_s(new_node->nazwisko, sizeof(new_node->nazwisko), nazwisko);
-    new_node->nr_tel = nr_tel;
-
-
-    new_node->next = (*head)->next;
-    new_node->previous = *head;
-
-    if ((*head)->next != NULL)
-    {
-        (*head)->next->previous = new_node;
-    }
-
-    (*head)->next = new_node;
-    if (new_node->next != NULL) 
-    {
-        new_node->next->previous = new_node;
-    }
-
-    *head = new_node;
-    
-
-    return new_node;
-}
+/**
+*
+*@brief
+*funkcja sluzaca do wyswietlania calej zawartosci listy
+*@param **head to podwójny wskaźnik na ,,głowę" listy
 */
-
 void print_list(struct Element** head)//wyswietla cala liste
 {
 
@@ -118,11 +104,18 @@ void print_list(struct Element** head)//wyswietla cala liste
         printf("__________________________\n");
     }
 }
+/**  
+* @brief
+* funkcja sluzaca do wyswietlania zawartosci pojedynczego elementu listy
+*/
 void print_values(struct Element** head)//wyswietla dane elementu w liscie
 {
     printf("Imie: %s\nNazwisko: %s\nNumer telefonu: %d\n", (*head)->imie, (*head)->nazwisko, (*head)->nr_tel);
 }
-
+/**
+* @brief
+* funkcja slużąca do ustawiania ,,głowy" listy na jej początku
+*/
 void set_head_front(struct Element** head)//przesuwa ,,glowe" czyli glowny wskaznik na poczatek listy
 {
     while ((*head)->previous != NULL) // sprawdza czy aktualna głowa nie jest początkiem listy
@@ -131,7 +124,9 @@ void set_head_front(struct Element** head)//przesuwa ,,glowe" czyli glowny wskaz
     }
     
 }
-
+/**
+* @brief funkcja slużąca do ustawiania ,,głowy" listy na jej końcu
+*/
 void set_head_back(struct Element** head)//przesuwa ,,glowe" czyli glowny wskaznik na poczatek listy
 {
     while ((*head)->next != NULL) // sprawdza czy aktualna głowa nie jest początkiem listy
@@ -139,7 +134,10 @@ void set_head_back(struct Element** head)//przesuwa ,,glowe" czyli glowny wskazn
         *head = (*head)->next; // przesuwa wskaźnik na poprzedni element listy
     }
 }
-
+/**
+* @brief funkcja slużąca do wyszukiwania w liście elementów po imieniu
+* @return zwraca 0 jezeli nie znaleziono 
+*/
 struct Element* search_by_imie(struct Element** head, char imie_s[20])//wyszukuje po imieniu
 {
     printf("\nSzukane imie: %s \n", imie_s);
@@ -173,7 +171,10 @@ struct Element* search_by_imie(struct Element** head, char imie_s[20])//wyszukuj
 
     return 0;//zwraca 0 jezeli nic nie znajdzie
 }
-
+/**
+* @brief funkcja slużąca do wyszukiwania w liście elementów po nazwisku
+* @return zwraca 0 jezeli nie znaleziono
+*/
 struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])//wyszukuje po nazwisku
 {
     printf("\nSzukane nazwisko: %s \n", nazwisko_s);
@@ -207,7 +208,10 @@ struct Element* search_by_nazwisko(struct Element** head, char nazwisko_s[50])//
 
     return 0;
 };
-
+/**
+* @brief funkcja slużąca do wyszukiwania w liście elementów po numerze telefonu
+* @return zwraca 0 jezeli nie znaleziono
+*/
 struct Element* search_by_nrtel(struct Element** head, int nrtel_s)//wyszukuje po numerze telfonu
 {
     printf("\nSzukany nr telefonu: %d \n", nrtel_s);
@@ -242,7 +246,10 @@ struct Element* search_by_nrtel(struct Element** head, int nrtel_s)//wyszukuje p
     return 0;
 
 };
-
+/**
+* @brief funkcja slużąca do wyszukiwania w liście elementów po imieniu i nazwisku
+* @return zwraca 0 jezeli nie znaleziono
+*/
 struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], char nazwisko_s[50])//wyszukuje po imieniu i nazwisku
 {
     printf("\nSzukana osoba: %s %s \n", imie_s, nazwisko_s);
@@ -278,7 +285,10 @@ struct Element* search_by_imie_naziwsko(struct Element** head, char imie_s[20], 
     return 0;
 
 };
-
+/**
+* @brief funkcja slużąca do wyszukiwania w liście elementów po imieniu, nazwisku i numerze telefonu
+* @return zwraca 0 jezeli nie znaleziono
+*/
 bool search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//wyszukuje po imieniu, nazwisku i numerze telefonu
 {
     printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
@@ -315,7 +325,10 @@ bool search_by_imie_naziwsko_nrtel(struct Element** head, char imie_s[20], char 
 
 
 };
-
+/**
+* @brief funkcja slużąca do edytowania kontaktu
+* @return zwraca 0 jezeli nie znaleziono
+*/
 struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s, char imie_ed[20], char nazwisko_ed[50], int nrtel_ed)//wyszukuje po imieniu, nazwisku i numerze telefonu
 {
     printf("\nSzukana osoba: %s %s %d \n", imie_s, nazwisko_s, nrtel_s);
@@ -355,6 +368,9 @@ struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwis
     return 0;
 
 };
+/**
+* @brief funkcja slużąca do usuwania elementow z listy
+*/
 void delete_element(struct Element** head)
 {
     if (*head == NULL)
@@ -384,7 +400,9 @@ void delete_element(struct Element** head)
     }
 
 }
-
+/**
+* @brief Funkcja szukająca elementu o podanym imieniu, nazwisku i nr tel
+*/
 bool search_and_set(struct Element** head, char imie_s[20], char nazwisko_s[50], int nrtel_s)//Funckja szukająca elementu o podanym imieniu, nazwisku i nr tel
 {
     if (*head == NULL) //Sprawdzenie czy lista jest pusta
@@ -411,6 +429,9 @@ bool search_and_set(struct Element** head, char imie_s[20], char nazwisko_s[50],
     // Jeżeli nie znaleziono elementu, wyświetl komunikat
     printf("Nie znaleziono osoby %s %s %d.\n", imie_s, nazwisko_s, nrtel_s);
 }
+/**
+* @brief Funkcja szukająca elementu o podanym ID i ustawiająca na nim ,,głowę" listy
+*/
 bool search_id_and_set(struct Element** head, int id)//Funckja szukająca elementu o podanym imieniu, nazwisku i nr tel
 {
     if (*head == NULL) //Sprawdzenie czy lista jest pusta
@@ -439,7 +460,11 @@ bool search_id_and_set(struct Element** head, int id)//Funckja szukająca elemen
 }
 
 
-
+/**
+* @brief Funkcja zamieniająca dwa elementy w liscie
+* @param **a podwojny wskaznik na pierwszy z zamienianych elementow
+* @param **a podwojny wskaznik na drugi z zamienianych elementow
+*/
 void swap(struct Element** a, struct Element** b) 
 {
     //Zmienna tymczasowa struktury bazowej do przechowywania wartosci pól podczas zamiany miejscami
@@ -469,7 +494,10 @@ void swap(struct Element** a, struct Element** b)
     strncpy_s((*a)->nazwisko, sizeof((*a)->nazwisko), temp.nazwisko, sizeof((*a)->nazwisko) - 1);
 }
 
-
+/**
+* @brief Funkcja sortująca liste po numerze telefonu
+* @param **head zawiera podwojny wskaznik na glowe listy
+*/
 void sortList(struct Element** head) //Funkcja sortująca po nr telefonu malejąco
 {
     if (*head == NULL || (*head)->next == NULL)
@@ -498,9 +526,13 @@ void sortList(struct Element** head) //Funkcja sortująca po nr telefonu maleją
         }
         last = current;
     } while (swapped);
-}
 
-void sortListNrTelRos(struct Element** head) //Funkcja sortująca po nr telefonu rosnąco
+}
+/**
+* @brief Funkcja sortująca liste po numerze telefonu rosnaco
+* @param **head zawiera podwojny wskaznik na glowe listy
+*/
+void sortListNrTelRos(struct Element** head)
 {
     if (*head == NULL || (*head)->next == NULL)
     {
@@ -529,27 +561,10 @@ void sortListNrTelRos(struct Element** head) //Funkcja sortująca po nr telefonu
         last = current;
     } while (swapped);
 }
-
-
-/* {
-    int i = 0;
-    struct Element temp = **head;
-    for (i=0;i < 5;i++)
-    {
-        set_head_front(head);
-        while ((*head)->next != NULL)
-        {
-            // printf("start petli");
-            if ((*head)->next->nr_tel > (*head)->nr_tel)
-            {
-                swap(&(*head)->next, &(*head));
-
-            }
-            (*head) = (*head)->next;
-        }
-    }
-}*/
-
+/**
+* @brief Funkcja eksportująca elementy listy do pliku
+* @param *head zawiera wskaznik na glowe listy
+*/
 void export_phonebook_to_file(char* file_name, struct Element* head) //Funkcja do eksportu elementów listy do pliku
 {
     FILE *file; //Utworzenie zmiennej do operacji na pliku
@@ -575,7 +590,11 @@ void export_phonebook_to_file(char* file_name, struct Element* head) //Funkcja d
     printf("Dane zostaly zapisane do pliku.\n");
 
 }
-
+/**
+* @brief Funkcja importująca elementy listy z pliku
+* @param **head zawiera podwojny wskaznik na glowe listy
+* @param *file_name ciag znakow zawierajacy nazwe pliku 
+*/
 void import_phonebook_from_file(char* file_name, struct Element** head) //Funkcja do importu kontaktow z pliku do listy
 {
     FILE* file; //Utworzenie zmiennej do operacji na pliku
@@ -601,7 +620,11 @@ void import_phonebook_from_file(char* file_name, struct Element** head) //Funkcj
     fclose(file); 
     printf("Dane zostaly wczytane z pliku.\n");
 }
-
+/**
+* @brief Funkcja sortująca elementy listy po imieniu
+* @param **head zawiera podwojny wskaznik na glowe listy
+* @param dir parametr informujacy o tym czy wartosci maja byc sortowane rosnaco czy malejaco
+*/
 void sortListByString(struct Element** head,bool dir)
 {
     //set_head_front(head);
@@ -627,6 +650,11 @@ void sortListByString(struct Element** head,bool dir)
         lptr = ptr1;
     } while (swapped);
 }
+/**
+* @brief Funkcja sortująca elementy listy po nazwisku
+* @param **head zawiera podwojny wskaznik na glowe listy
+* @param dir parametr informujacy o tym czy wartosci maja byc sortowane rosnaco czy malejaco
+*/
 void sortListByString_surname(struct Element** head, bool dir)
 {
     //set_head_front(head);
@@ -652,6 +680,11 @@ void sortListByString_surname(struct Element** head, bool dir)
         lptr = ptr1;
     } while (swapped);
 }
+/**
+* @brief funkcja zamieniająca ze soba dwa elementy listy jednak po lancuchach
+* @param *a wskaznik na pierwszy element
+* @param *b wskaznik na drugi element
+*/
 int swap_string(struct Element* a, struct Element* b) 
 {
     //Zmienne tymczasowe do przechowywania wartosci pól podczas zamiany miejscami
@@ -678,6 +711,12 @@ int swap_string(struct Element* a, struct Element* b)
     strncpy_s(a->nazwisko, sizeof(a->nazwisko), b->nazwisko, sizeof(a->nazwisko) - 1);
     strncpy_s(b->nazwisko, sizeof(b->nazwisko), temp_nazwisko, sizeof(b->nazwisko) - 1);
 }
+/** 
+* @brief funkcja porownujaca dwa ciagi znakow ze soba
+* @param *a wskaznik na pierwszy element
+* @param *b wskaznik na drugi element
+* @param dir parametr informujący o tym w którą strone ma porównywać
+*/
 int compareStrings(const char* a, const char* b,bool dir) 
 {
     if (dir==1)
@@ -685,15 +724,24 @@ int compareStrings(const char* a, const char* b,bool dir)
     else 
     return strcmp(b, a);
 }
-// Funkcja do porównywania dwóch nazwisk
+
+/** 
+* 
+*@brief funkcja porownujaca dwa ciagi znakow ze soba bez wybory kierunku
+* @param *a wskaznik na pierwszy element
+* @param *b wskaznik na drugi element
+*/
 int compare(const char* a, const char* b)
 {
     
         return strcmp(b, a); // Porównanie w odwrotnej kolejności (malejąco)
   
 }
-
-// Funkcja sortująca listę malejąco alfabetycznie według nazwiska
+/**
+* 
+*@brief Funkcja sortująca listę malejąco alfabetycznie według nazwiska
+* @param **lista wskaznik zawierajacy adres poczatku listy
+*/
 void sortuj(struct Element** lista) {
     struct Element* current;
     struct Element* next;
@@ -750,7 +798,10 @@ void sortuj(struct Element** lista) {
     } while (swapped);
 }
 
-
+/**
+* 
+ * @brief główna funkcja zawierająca menu, mozliwosc wyboru funkcji, pobieranie danych od uzytkownika..
+*/
 int main()
 {
 
