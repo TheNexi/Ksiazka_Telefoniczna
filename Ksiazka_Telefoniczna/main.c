@@ -368,6 +368,23 @@ struct Element* edit_contact(struct Element** head, char imie_s[20], char nazwis
     return 0;
 
 };
+
+
+struct Element* edit_contact_id(struct Element** head, char imie_ed[20], char nazwisko_ed[50], int nrtel_ed)//wyszukuje po imieniu, nazwisku i numerze telefonu
+{
+    printf("\nSzukana osoba: %s %s %d \n", (*head)->imie, (*head)->nazwisko, (*head)->nr_tel);
+
+    strcpy_s((*head)->imie, sizeof((*head)->imie), imie_ed); // edycja imienia z parametru funkcji do pola bazowego funkcji
+    strcpy_s((*head)->nazwisko, sizeof((*head)->nazwisko), nazwisko_ed); // kopiowanie nazwiska z parametru funkcji do pola bazowego funkcji
+    (*head)->nr_tel = nrtel_ed; // kopiowanie nr telefonu z parametru funkcji do pola bazowego funkcji
+
+    *head = (*head)->next;//przesuwa wskaznik na nastepny element po edytowaniu pasujacej osoby   
+  
+
+    return 0;
+
+};
+
 /**
 * @brief funkcja slużąca do usuwania elementow z listy
 */
@@ -861,7 +878,7 @@ int main()
     char imie_edycja[30];
     char nazwisko_edycja[50];
     int nr_tel_edycja = 0;
-    int nr_tel_temp_edycja = 0;
+    char nr_tel_temp_edycja[30];
 
 
     while (wybor != 8) //Pętla główna menu
@@ -909,49 +926,131 @@ int main()
         case 3:
         {
             //Edytowanie osoby
-            while (getchar() != "\n")
+            int wybor;
+            wybor = 0;
+            printf("1. Po imieniu, nazwisku, numerze telefonu.\n2. Po ID\nTwoj wybor: ");
+            
+            scanf_s("%d", &wybor);                
+
+            if (wybor == 1)
             {
-                printf("Podaj imie osoby do edycji: ");
-                fgets(imie, sizeof(imie), stdin);
+                while (getchar() != "\n")
+                {
+                    printf("Podaj imie osoby do edycji: ");
+                    fgets(imie, sizeof(imie), stdin);
+                    break;
+                }
+
+
+                
+
+                printf("Podaj nazwisko osoby do edycji: ");
+                fgets(nazwisko, sizeof(nazwisko), stdin);
+
+
+
+                printf("Podaj nr tel osoby do edycji: ");
+                fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+                nr_tel = atoi(nr_tel_temp);
+
+                if (search_by_imie_naziwsko_nrtel(&head, imie, nazwisko, nr_tel))
+                {
+                    printf("Podaj imie na jakie chcesz zmienic: ");
+                    fgets(imie_edycja, sizeof(imie_edycja), stdin);
+
+                    
+                    printf("Podaj nazwisko na jakie chcesz zmienic: ");
+                    fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
+                    
+
+                    printf("Podaj nr tel na jakie chcesz zmienic: ");
+                    fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
+                    nr_tel_edycja = atoi(nr_tel_temp_edycja);
+
+
+
+                    edit_contact(&head, imie, nazwisko, nr_tel, imie_edycja, nazwisko_edycja, nr_tel_edycja);
+
+                }
+                else
+                {
+                    printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\nPrzerwano edycje!\n", imie, nazwisko, nr_tel);
+                }
+
                 break;
             }
-
-
-            printf("Podaj nazwisko osoby do edycji: ");
-            fgets(nazwisko, sizeof(nazwisko), stdin);
-
-
-
-            printf("Podaj nr tel osoby do edycji: ");
-            fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
-            nr_tel = atoi(nr_tel_temp);
-
-            if (search_by_imie_naziwsko_nrtel(&head, imie, nazwisko, nr_tel))
+            else if (wybor == 2)
             {
-                printf("Podaj imie na jakie chcesz zmienic: ");
-                fgets(imie_edycja, sizeof(imie_edycja), stdin);
+                int id;
+                printf("Podaj ID : ");
+                scanf_s("%d", &id);
 
-                printf("Podaj nazwisko na jakie chcesz zmienic: ");
-                fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
+                if (search_id_and_set(&head, id)) //Ustawienie głowy na osobie do usuniecia
+                {
+                    printf("\nCzy napewno chcesz edytowac ta osobe: %s %s %d ?\n1 - Tak, 2 - Nie\nTwoj wybor: ", head->imie, head->nazwisko, head->nr_tel); 
+
+                    int decyzja = 0;
+
+                    scanf_s("%d", &decyzja, sizeof(decyzja));
+                    
+                    if (decyzja == 1)
+                    {
+                        while (getchar() != "\n")
+                        {
+                            printf("Podaj imie na jakie chcesz zmienic: ");
+                            fgets(imie_edycja, sizeof(imie_edycja), stdin);
+                            break;
+                        }
+                        
+
+                        printf("Podaj nazwisko na jakie chcesz zmienic: ");
+                        fgets(nazwisko_edycja, sizeof(nazwisko_edycja), stdin);
 
 
-                printf("Podaj nr tel na jakie chcesz zmienic: ");
-                fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
-                nr_tel_edycja = atoi(nr_tel_temp_edycja);
-                edit_contact(&head, imie, nazwisko, nr_tel, imie_edycja, nazwisko_edycja, nr_tel_edycja);
+                        printf("Podaj nr tel na jakie chcesz zmienic: ");
+                        fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
+                        nr_tel_edycja = atoi(nr_tel_temp_edycja);
+                      
+                        edit_contact_id(&head, imie_edycja, nazwisko_edycja, nr_tel_edycja);
 
+                        printf("\nEdytowano kontakt!\n");
+
+                        break;
+                    }
+                    else if (decyzja == 2)
+                    {
+                        printf("\nPowrot do menu!\n");
+                    }
+                    else
+                    {
+                        printf("Bledny wybor! Powrot do menu!\n");
+                        break;
+                    }
+                    
+
+                    break;
+                }
+                else
+                {
+                    printf("\nNie znaleziono  osoby o takim id!\n");
+                    break;
+                }
+
+                
+                break;
             }
             else
             {
-                printf("\nNie znaleziono osoby %s %s o numerze telefonu: %d\nPrzerwano edycje!\n", imie, nazwisko, nr_tel);
+                printf("\nBledny wybor, powrot do menu!\n");
+                break;
             }
-
-            break;
+            
+            
 
         }
         case 4:
         {
-            printf("1.Po imieniu, nazwisku numerze telefonu.\n2. po ID\n");
+            printf("1.Po imieniu, nazwisku numerze telefonu.\n2. Po ID\n");
             int wybor;
             wybor = 0;
             scanf_s("%d", &wybor);
