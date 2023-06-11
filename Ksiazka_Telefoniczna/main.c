@@ -915,6 +915,11 @@ int main()
 
             printf("Podaj nr tel: ");
             fgets(nr_tel_temp, sizeof(nr_tel_temp), stdin);
+
+            imie[strcspn(imie, "\n")] = '\0';
+            nazwisko[strcspn(nazwisko, "\n")] = '\0';
+            //nr_tel_temp_edycja[strcspn(nr_tel_temp_edycja, "\n")] = '\0';
+
             nr_tel = atoi(nr_tel_temp); //Konwersja string to int
             set_head_front(&head);
             //set_head_back(&head);
@@ -965,6 +970,11 @@ int main()
 
                     printf("Podaj nr tel na jakie chcesz zmienic: ");
                     fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
+
+                    imie_edycja[strcspn(imie_edycja, "\n")] = '\0';
+                    nazwisko_edycja[strcspn(nazwisko_edycja, "\n")] = '\0';
+                    nr_tel_temp_edycja[strcspn(nr_tel_temp_edycja, "\n")] = '\0';
+
                     nr_tel_edycja = atoi(nr_tel_temp_edycja);
 
 
@@ -1009,6 +1019,11 @@ int main()
 
                         printf("Podaj nr tel na jakie chcesz zmienic: ");
                         fgets(nr_tel_temp_edycja, sizeof(nr_tel_temp_edycja), stdin);
+
+                        imie_edycja[strcspn(imie_edycja, "\n")] = '\0';
+                        nazwisko_edycja[strcspn(nazwisko_edycja, "\n")] = '\0';
+                        nr_tel_temp_edycja[strcspn(nr_tel_temp_edycja, "\n")] = '\0';
+
                         nr_tel_edycja = atoi(nr_tel_temp_edycja);
                       
                         edit_contact_id(&head, imie_edycja, nazwisko_edycja, nr_tel_edycja);
@@ -1221,7 +1236,7 @@ int main()
         case 6:
         {
             //Import z pliku
-            import_phonebook_from_file("kontakty_eksport.txt", &head);
+            import_phonebook_from_file("kontakty_import.txt", &head);
 
             break;
         }
